@@ -11,7 +11,7 @@ namespace BlinkyLed
     {
         public static void Main()
         {
-            Debug.WriteLine("WifiKit21 NF Blinky");
+            Debug.WriteLine("WifiKit32 NF Blinky");
             int counter = 0;
             
             GpioController gpioc = new GpioController();
@@ -28,13 +28,6 @@ namespace BlinkyLed
                 Thread.Sleep(1000);
                 counter++;
             }
-
-
-            
-
-            // Browse our samples repository: https://github.com/nanoframework/samples
-            // Check our documentation online: https://docs.nanoframework.net/
-            // Join our lively Discord community: https://discord.gg/gCyBu8T
         }
     }
 }
