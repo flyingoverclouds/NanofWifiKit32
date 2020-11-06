@@ -16,8 +16,8 @@ The project joined the [.Net Foundation](https://dotnetfoundation.org/projects/n
 A set common class, helper, framework for Wifikit32. 
 This project is used in other samples.
 
+## [BlinkyLed](src/BlinkyLed/BlinkyLed/) (exe)
 
-## BlinkyLed (exe)
 // *The iot diy hello world !* //
 
 This program blink the wifikit32 onboard led (hard wired to GPIO 25).
