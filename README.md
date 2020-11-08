@@ -1,5 +1,6 @@
 # NanofWifiKit32
 Different samples for Wifikit32 (ESP32 board) written using nanoframework.
+
 Futur : integration Lorakit32 (ESP32 board with LORA network).
 
 # Prerequisite & introduction
@@ -14,9 +15,10 @@ The project joined the [.Net Foundation](https://dotnetfoundation.org/projects/n
 
 ## Wifikit32Common (library)
 A set common class, helper, framework for Wifikit32. 
-This project is used in other samples.
 
-## [BlinkyLed](src/BlinkyLed/BlinkyLed/) (exe)
+This project is reused in other samples.
+
+## [BlinkyLed](src/BlinkyLed/) (exe)
 
 // *The iot diy hello world !* //
 
@@ -24,4 +26,7 @@ This program blink the wifikit32 onboard led (hard wired to GPIO 25).
 
 It the simplest test to check if the whole dev/compile/deploy chain works with a visual confirmation (the blinking led + debug counter increasing printed on debug output)
 
+## [HellOled](src/HellOled/) (exe)
 
+ A hello world sample for the onboard Oled screen.
+ 

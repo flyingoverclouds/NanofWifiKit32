@@ -252,7 +252,7 @@ namespace WifiKit32Common
         /// <summary>
         /// Onboad VExt Control (GPIO 21)
         /// </summary>
-        public const int VextControl = GpioPortNumber.Gpio21;
+        public const int OledVExt = GpioPortNumber.Gpio21;
     }
 
 }
