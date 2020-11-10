@@ -4,6 +4,12 @@ namespace nanoframework.OledDisplay1306
 {
     public partial class SSD1306Driver
     {
+
+        /// <summary>
+        /// set a pixel to the currentcolor.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void SetPixel(int x, int y)
         {
             if (x>=0 && x<_displayWidth && y>=0 && y< _displayHeight)
@@ -37,6 +43,14 @@ namespace nanoframework.OledDisplay1306
             b = c;
         }
 
+
+        /// <summary>
+        /// Draw a line from (x0,y0) to (x1,y1) using the current color 
+        /// </summary>
+        /// <param name="x0"></param>
+        /// <param name="y0"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
         public void DrawLine(int x0, int y0, int x1, int y1)
         {
             var steep = abs(y1 - y0) > abs(x1 - x0);
@@ -84,12 +98,22 @@ namespace nanoframework.OledDisplay1306
                     err += dx;
                 }
             }
-
         }
 
+
+        /// <summary>
+        /// Draw a transparent rectangle box, using currentcolor for border.
+        /// </summary>
+        /// <param name="x0"></param>
+        /// <param name="y0"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
         public void DrawRect(UInt16 x0, UInt16 y0, UInt16 x1, UInt16 y1)
         {
-            throw new NotImplementedException();
+            //drawHorizontalLine(x, y, width);
+            //drawVerticalLine(x, y, height);
+            //drawVerticalLine(x + width - 1, y, height);
+            //drawHorizontalLine(x, y + height - 1, width);
         }
 
         public void FillRect(UInt16 x0, UInt16 y0, UInt16 x1, UInt16 y1)
@@ -112,9 +136,63 @@ namespace nanoframework.OledDisplay1306
             throw new NotImplementedException();
         }
 
-        public void DrawHorizontalLine(UInt16 x0, UInt16 y0, UInt16 length)
+        /// <summary>
+        /// Draw an hoizontal line 
+        /// </summary>
+        /// <param name="x">X origine</param>
+        /// <param name="y">Y origine</param>
+        /// <param name="length">size of line (in pixel)</param>
+        public void DrawHorizontalLine(int x, int y, int length)
         {
-            throw new NotImplementedException();
+            if (y < 0 || y >= _displayHeight) { return; }
+
+            if (x < 0)
+            {
+                length += x;
+                x = 0;
+            }
+
+            if ((x + length) > _displayWidth)
+            {
+                length = (_displayWidth - x);
+            }
+
+            if (length <= 0) { return; }
+
+            //uint8_t* bufferPtr = buffer;
+            //bufferPtr += (y >> 3) * this->width();
+            //bufferPtr += x;
+            int bufferNdx = (y >> 3) * _displayWidth;
+            bufferNdx += x;
+
+            byte drawBit = (byte)(1 << (y & 7));
+
+            switch (CurrentColor)
+            {
+                case OledColor.White:
+                    while (length-- != 0)
+                    {
+                        //            *bufferPtr++ |= drawBit;
+                        displayBuffer[bufferNdx++] |= drawBit;
+                    }; 
+                    break;
+                case OledColor.Black:
+                    drawBit = (byte)(~drawBit); 
+                    while (length--!=0)
+                    {
+                        //*bufferPtr++ &= drawBit;
+                        displayBuffer[bufferNdx++] &= drawBit;
+
+                    }; 
+                    break;
+                case OledColor.Inverse:
+                    while (length-- != 0)
+                    {
+                        //            *bufferPtr++ ^= drawBit;
+                        displayBuffer[bufferNdx++] ^= drawBit;
+                    }; 
+                    break;
+            }
         }
 
         public void DrawVerticalLine(UInt16 x0, UInt16 y0, UInt16 length)
