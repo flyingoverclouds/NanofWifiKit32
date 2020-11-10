@@ -104,16 +104,16 @@ namespace nanoframework.OledDisplay1306
         /// <summary>
         /// Draw a transparent rectangle box, using currentcolor for border.
         /// </summary>
-        /// <param name="x0"></param>
-        /// <param name="y0"></param>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        public void DrawRect(UInt16 x0, UInt16 y0, UInt16 x1, UInt16 y1)
+        /// <param name="x">Top Left X coordinate</param>
+        /// <param name="y">Top Left Y coordinate</param>
+        /// <param name="width">Width of rectangle (including bounding box)</param>
+        /// <param name="height">Height of rectangle (including bounding box)</param>
+        public void DrawRect(int x, int y, int width, int height)
         {
-            //drawHorizontalLine(x, y, width);
-            //drawVerticalLine(x, y, height);
-            //drawVerticalLine(x + width - 1, y, height);
-            //drawHorizontalLine(x, y + height - 1, width);
+            DrawHorizontalLine(x, y, width);
+            DrawVerticalLine(x, y, height);
+            DrawVerticalLine(x + width - 1, y, height);
+            DrawHorizontalLine(x, y + height - 1, width);
         }
 
         public void FillRect(UInt16 x0, UInt16 y0, UInt16 x1, UInt16 y1)
@@ -181,6 +181,12 @@ namespace nanoframework.OledDisplay1306
             }
         }
 
+        /// <summary>
+        /// Draw a vertical line using an optimized algorithme
+        /// </summary>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        /// <param name="length">Length in pixel</param>
         public void DrawVerticalLine(int x, int y, int length)
         {
             if (x < 0 || x >= _displayWidth || length==0) return;

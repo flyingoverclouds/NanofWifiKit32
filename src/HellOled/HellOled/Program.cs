@@ -19,6 +19,7 @@ namespace HellOled
             oledScreen.DrawLine(0, oledScreen.DisplayHeight - 1, oledScreen.DisplayWidth - 1, 0);
             oledScreen.DrawHorizontalLine(20, 32, 88);
             oledScreen.DrawVerticalLine(64, 10, 44);
+            oledScreen.DrawRect(30, 15, 68, 34);
         }
 
         public static void Main()
