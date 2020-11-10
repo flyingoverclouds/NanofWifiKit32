@@ -164,7 +164,7 @@ namespace nanoframework.OledDisplay1306
         }
 
         /// <summary>
-        /// Draw part of circle (1/8 of circule)
+        /// Draw part of circle (1/4 of circle)
         /// quad bitmap mask
         ///    0b00000001 : 0   -> 90°  quad
         ///    0b00000010 : 270 -> 360° quad
