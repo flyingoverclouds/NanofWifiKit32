@@ -11,6 +11,9 @@ namespace HellOled
 {
     public class Program
     {
+        static XbmImage wifiLogo = null;
+        static XbmImage nanofLogo = null;
+
         static void DemoGeometry(SSD1306Driver oledScreen)
         {
             //for (short i = 20; i < 108; i+=4)
@@ -32,6 +35,15 @@ namespace HellOled
             oledScreen.DrawCircle(64, 31, 30);
         }
 
+        static void DemoScreen2(SSD1306Driver oledScreen)
+        {
+            Random rnd = new Random();
+            oledScreen.DrawProgressBar(5, 5, 118, 10, rnd.Next(100));
+            oledScreen.DrawXbm(64, 20, wifiLogo.Width, wifiLogo.Height, wifiLogo.Datas); // original lib signature
+            oledScreen.DrawXbm(0, 20, nanofLogo); // dotnet style signature
+        }
+
+        
         public static void Main()
         {
             Debug.WriteLine("[HellOled] : a hello word with the embedded OLED screen.");
@@ -53,11 +65,12 @@ namespace HellOled
             GpioPin led = gpioc.OpenPin(WifiKit32Common.OnBoardDevicePortNumber.Led, PinMode.Output);
             led.Write(PinValue.Low);
 
-
+            wifiLogo = XBMSamples.GetLoraXBM();
+            nanofLogo = XBMSamples.GetNanoFrameworkXBM();
             
             while (true)
             {
-                switch(counter%2)
+                switch(counter)
                 {
                     case 0:
                         heltec.Display.Clear();
@@ -80,12 +93,18 @@ namespace HellOled
                         heltec.Display.Clear();
                         DemoGeometry(heltec.Display);
                         break;
+                    case 2:
+                        heltec.Display.Clear();
+                        DemoScreen2(heltec.Display);
+                        break;
+                    default:
+                        counter = -1; // there is the ++ at the end of loop
+                        break;
                 }
+
                 heltec.Display.RefreshDisplay();
 
                 led.Toggle();
-                if (counter > 10000)
-                    counter = 0;
 
                 Thread.Sleep(1000);
                 counter++;

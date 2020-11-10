@@ -4,6 +4,9 @@ using System.Text;
 
 namespace XbmConverter
 {
+
+    // SAMPLE. 
+    // USE https://www.online-utility.org/image/convert/to/XBM that generate directly C code.
     class Program
     {
         // This simple program is used to convert a AsciiArt ( 1 & 0 char only) to a c# byte[]

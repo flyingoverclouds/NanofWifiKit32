@@ -169,11 +169,10 @@ namespace nanoframework.OledDisplay1306
 
 
         /// <summary>
-        /// Clear the display buffer.
+        /// Clear the display buffer (set all pixel to 0)
         /// </summary>
         public void Clear()
         {
-            // TODO : implement a optimized fillin
             for (int n = 0; n < displayBuffer.Length; n++)
                 displayBuffer[n] = 0;
         }

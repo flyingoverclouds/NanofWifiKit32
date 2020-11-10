@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HellOled;
+using System;
 
 namespace nanoframework.OledDisplay1306
 {
@@ -390,19 +391,70 @@ namespace nanoframework.OledDisplay1306
 
         }
 
-        public void DrawProgressBar(UInt16 x0, UInt16 y0, UInt16 width, UInt16 height, UInt16 progress)
+        /// <summary>
+        /// Draw a rounded corned progress base. 
+        /// </summary>
+        /// <param name="x">X of top left corner</param>
+        /// <param name="y">Y of top left </param>
+        /// <param name="width">width in pixel</param>
+        /// <param name="height">width in pixel </param>
+        /// <param name="progress">progression (0->100)</param>
+        public void DrawProgressBar(int x, int y, int width, int height, int progress)
         {
+            int radius = height / 2;
+            int xRadius = x + radius;
+            int yRadius = y + radius;
+            int doubleRadius = 2 * radius;
+            int innerRadius = radius - 2;
+
+            CurrentColor=OledColor.White;
+            DrawCircleQuads(xRadius, yRadius, radius, 0b00000110);
+            DrawHorizontalLine(xRadius, y, width - doubleRadius + 1);
+            DrawHorizontalLine(xRadius, y + height, width - doubleRadius + 1);
+            DrawCircleQuads(x + width - radius, yRadius, radius, 0b00001001);
+
+            int maxProgressWidth = (width - doubleRadius + 1) * progress / 100;
+
+            FillCircle(xRadius, yRadius, innerRadius);
+            FillRect(xRadius + 1, y + 2, maxProgressWidth, height - 3);
+            FillCircle(xRadius + maxProgressWidth, yRadius, innerRadius);
+        }
+
+        public void DrawFastImage(int x0, int y0, int width, int height, byte[] image )
+        {
+            //drawInternal(xMove, yMove, width, height, image, 0, 0);
             throw new NotImplementedException();
         }
 
-        public void DrawFastImage(UInt16 x0, UInt16 y0, UInt16 width, UInt16 height, byte[] image )
+
+        public void DrawXbm(int x, int y, XbmImage image)
         {
-            throw new NotImplementedException();
+            DrawXbm(x, y, image.Width, image.Height, image.Datas);
         }
 
-        public void DrawXbm(UInt16 x0, UInt16 y0, UInt16 width, UInt16 height, byte[] image)
+        public void DrawXbm(int xMove, int yMove, int width, int height, byte[] xbm)
         {
-            throw new NotImplementedException();
+            int widthInXbm = (width + 7) / 8;
+            int data = 0;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if ((x & 7)!=0)
+                        data >>= 1; // Move a bit
+                    else
+                    {  
+                        data = xbm[(x / 8) + y * widthInXbm];
+                    }
+                    
+                    // if there is a bit draw it
+                    if ((data & 0x01)!=0)
+                    {
+                        SetPixel(xMove + x, yMove + y);
+                    }
+                }
+            }
         }
 
 
