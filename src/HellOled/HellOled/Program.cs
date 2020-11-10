@@ -5,11 +5,19 @@ using System.Device.Gpio;
 using nanoFramework.Hardware.Esp32;
 using Windows.Devices.I2c;
 using HeltecLib;
+using nanoframework.OledDisplay1306;
 
 namespace HellOled
 {
     public class Program
     {
+
+        static void DemoGeometry(SSD1306Driver oledScreen)
+        {
+            oledScreen.Clear();
+            for(ushort i= 0;i< 20;i++)
+                oledScreen.SetPixel(i,i);
+        }
 
         public static void Main()
         {
@@ -18,28 +26,55 @@ namespace HellOled
             // Heltec oled TEST
             var heltec = new HeltecOled();
             heltec.Begin();
-            heltec.Display.SetContrast(20);
+            //heltec.Display.SetContrast(20);
+            heltec.Display.SetBrightness(180);
+
+            heltec.Display.InvertDisplay();
+            heltec.Display.FlipScreenVertically();
+            heltec.Display.CurrentColor = OledColor.White;
+
 
             // BLINK LED TO WAIT
             int counter = 0;
             GpioController gpioc = new GpioController();
             GpioPin led = gpioc.OpenPin(WifiKit32Common.OnBoardDevicePortNumber.Led, PinMode.Output);
             led.Write(PinValue.Low);
+
+
             
             while (true)
             {
-                if (counter%2==0)
-                    heltec.Display.TestFill(3);
-                else
-                    heltec.Display.TestFill(2);
+                switch(counter%2)
+                {
+                    case 0:
+                        heltec.Display.Clear();
+                        heltec.Display.TestFill(4);
+                        //heltec.Display.TestFill(0);
+                        break;
+                    //case 1:
+                    //    heltec.Display.Clear();
+                    //    heltec.Display.TestFill(1);
+                    //    break;
+                    //case 2:
+                    //    heltec.Display.Clear();
+                    //    heltec.Display.TestFill(2);
+                    //    break;
+                    //case 3:
+                    //    heltec.Display.Clear();
+                    //    heltec.Display.TestFill(3);
+                    //    break;
+                    case 1:
+                        //heltec.Display.Clear();
+                        DemoGeometry(heltec.Display);
+                        break;
+                }
                 heltec.Display.RefreshDisplay();
 
                 led.Toggle();
                 if (counter > 10000)
                     counter = 0;
 
-                //Debug.WriteLine(counter.ToString());
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
                 counter++;
             }
         }

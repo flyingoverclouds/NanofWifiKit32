@@ -38,7 +38,7 @@ namespace HeltecLib
             Configuration.SetPinFunction(WifiKit32Common.OnBoardOled.Clock, DeviceFunction.I2C1_CLOCK);
             i2cBusSSD1306 = I2cDevice.FromId("I2C1", new I2cConnectionSettings(WifiKit32Common.OnBoardOled.I2CAddress) { BusSpeed = I2cBusSpeed.FastMode, SharingMode = I2cSharingMode.Exclusive }); // use the 400khz, but HeltecOled should support higher speed up to  700khz
 
-            ssd1306 = new SSD1306Driver(i2cBusSSD1306,oledReset,0 /* Heltec onboard oled support 0ms */);
+            ssd1306 = new SSD1306Driver(i2cBusSSD1306,oledReset,50 /* Heltec onboard oled support 0ms */);
 
             ssd1306.Init();
             //ssd1306.FlipScreenVertically();
@@ -55,14 +55,16 @@ namespace HeltecLib
         {
             oledVext?.Write(PinValue.Low); // based on Heltec.cpp:Heltec_ESP32::VextON()
         }
+
+        /// <summary>
+        /// Reset the onboard oled screen by switching off/on the reset pin.
+        /// </summary>
         public void Reset()
         {
-            // Based on oled/OLEDDisplay.cpp:OLEDDisplay::resetDisplay()
             oledReset?.Write(PinValue.Low);
             Thread.Sleep(100);
             oledReset?.Write(PinValue.High);
             Thread.Sleep(100);
         }
-
     }
 }

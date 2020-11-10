@@ -33,16 +33,16 @@ namespace nanoframework.OledDisplay1306
 
 
         //DisplayRatio = 0x80,
-        //NoOffSet = 0x0,
+        //NoOffSet = 0x00,
         //VCCState = 0x14,
-        //LowColumn = 0x0,
+        //LowColumn = 0x00,
         //DisableLRRemap = 0x12,
         //NoExternalVcc = 0xCF,
         //InternalDC = 0xF1,
         //ComDetect = 0xD8,
         //SetComDetect = 0x40,
         //DeactivateScroll = 0x2E,
-        //Reset = 0x0,
+        //Reset = 0x00,
         //PageEndAddress = 0x37
     }
 }

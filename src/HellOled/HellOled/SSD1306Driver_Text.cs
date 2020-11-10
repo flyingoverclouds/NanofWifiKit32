@@ -37,7 +37,8 @@ namespace nanoframework.OledDisplay1306
             throw new NotImplementedException();
         }
 
-        public void SetFontTableLookupFunnction(/* tablelookupfunction */)
+
+    public void SetFontTableLookupFunnction(/* tablelookupfunction */)
         {
             // Convert UTF8 --> font table index
             throw new NotImplementedException();

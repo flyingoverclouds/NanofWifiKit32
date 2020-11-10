@@ -6,7 +6,29 @@ namespace nanoframework.OledDisplay1306
     {
         public void SetPixel(UInt16 x,UInt16 y)
         {
-            throw new NotImplementedException();
+            //if (x >= 0 && x < this->width() && y >= 0 && y < this->height())
+            if (x>=0 && x<_displayWidth && y>=0 && y< _displayHeight)
+            {
+                switch (_currentColor)
+                {
+                    case OledColor.White:
+                        //        case WHITE: buffer[x + (y / 8) * this->width()] |= (1 << (y & 7)); break;
+                         displayBuffer[x + (y / 8) * _displayWidth] |= (byte)(1 << (y & 7));
+                        break;
+                    case OledColor.Black:
+                        //        case BLACK: buffer[x + (y / 8) * this->width()] &= ~(1 << (y & 7)); break;
+                        displayBuffer[x + (y / 8) * _displayWidth] &= (byte)~(1 << (y & 7));
+                        break;
+                    case OledColor.Inverse:
+                        //        case INVERSE: buffer[x + (y / 8) * this->width()] ^= (1 << (y & 7)); break;
+                        displayBuffer[x + (y / 8) * _displayWidth] ^= (byte)(1 << (y & 7));
+                        break;
+                }
+            }
+            if(x==0&&y==0)
+            {
+                displayBuffer[x + (y / 8) * _displayWidth] |= 128;
+            }
         }
 
         public void DrawLine(UInt16 x0, UInt16 y0,UInt16 x1, UInt16 y1)

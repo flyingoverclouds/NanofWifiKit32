@@ -1,13 +1,12 @@
 ﻿/*********************************************************************************************
  * SSD1306 library - 
- * This C# library is heavily based on the original C/C++ Thingpulse Arduino SSD1306 library.
- * It integrate some Heltec board specificity.
- * It has been redesigned to respect C#/.Net/Nanoframework best practices & constraint.
+ * This C# library is orignally based on the original C/C++ Thingpulse Arduino SSD1306 library.
+ * It has been redesigned to respect C#/.Net/Nanoframework best practices, constraint & optimization.
  * 
  * (c) Nicolas Clerc - Novembre 2020
  * 
  * ------- VERSION
- * v202011 : only with simple buffering
+ * v202011 : simple buffering version. Only tested on Wifikit32 v2.
  * 
  *-------- LICENSE
  * The MIT License (MIT)
@@ -109,41 +108,65 @@ namespace nanoframework.OledDisplay1306
         
         /// <summary>
         /// This test methid fill the display buffer with random value
+        /// 0: random pixel fill 
+        /// 1: alternate vertical line
+        /// 2: alternate thick vertical line
+        /// 3:thin horizontal line
+        /// 4: first 8 byte of display buffer set to 255 (usefull for origin alignment test)
         /// </summary>
         public void TestFill(int pattern=0)
         {
             Clear();
             switch (pattern)
             {
-                case 0:
+                case 0: // random fill of display buffer
                     Random rnd = new Random((int)DateTime.UtcNow.Ticks);
                     rnd.NextBytes(displayBuffer);
                     break;
-                case 1:
+                case 1: // alternate vertical line 
                     for (int i = 0; i < displayBuffer.Length;)
                     {
                         displayBuffer[i++] = 0;
                         displayBuffer[i++] = 255;
                     }
                     break;
-                case 2:
+                case 2: // alternate thick vertical line
                     for (int i = 0; i < displayBuffer.Length;)
                     {
                         displayBuffer[i++] = 0; displayBuffer[i++] = 0; displayBuffer[i++] = 0; displayBuffer[i++] = 0;
                         displayBuffer[i++] = 255; displayBuffer[i++] = 255; displayBuffer[i++] = 255; displayBuffer[i++] = 255;
                     }
                     break;
-                case 3:
+                case 3: // thin horizontal line
                     for (int i = 0; i < displayBuffer.Length;i++)
                     {
                         displayBuffer[i++] = 16; 
                     }
                     break;
-
+                case 4: // first 128 byte set to same value
+                    for (int i = 0; i < 1024-8; i++)
+                    {
+                        //displayBuffer[1023 - i] = 255;
+                        displayBuffer[i] = 128+16;
+                    }
+                    break;
                 default:
                     throw new ArgumentException("Pattern value is : 0 --> 3", "pattern");
             }
         }
+
+        /// <summary>
+        /// Switching off/on eletrical power of oled screen. 
+        /// It gpio reset pin not provider, nothing happens.
+        /// </summary>
+        public void Reset()
+        {
+            resetPin?.Write(PinValue.Low);
+            Thread.Sleep(100);
+            resetPin?.Write(PinValue.High);
+            Thread.Sleep(100);
+        }
+
 
         /// <summary>
         /// Clear the display buffer.
@@ -159,11 +182,12 @@ namespace nanoframework.OledDisplay1306
         /// </summary>
         public void RefreshDisplay()
         {
-            byte x_offset = (byte)((128 - _displayWidth) / 2);
+            int x_offset = (128 - _displayWidth) / 2;
 
             SendI2CCommand(Commands.ColumnAddress);
-            SendI2CCommand(x_offset);
+            SendI2CCommand((byte)x_offset);
             SendI2CCommand((byte)(x_offset + (_displayWidth - 1 )));
+            
 
             SendI2CCommand(Commands.PageAddress);
             SendI2CCommand(0x00);
@@ -171,12 +195,14 @@ namespace nanoframework.OledDisplay1306
 
             //if (geometry == GEOMETRY_128_64)
             //{
-            SendI2CCommand(0x7);
+            //    SendI2CCommand(0x7); // BUGGY ON WIFIKIT32 !!!!
             //}
             //else if (geometry == GEOMETRY_128_32)
             //{
-            //    sendCommand(0x3);
+            //    SendI2CCommand(0x3);
             //}
+            SendI2CCommand(0x0); // CORRECT VALUE FOR WIFIKIT32
+
 
             byte[] img = new byte[displayBuffer.Length+1];
             img[0] = (Byte)Commands.SetStartLine;
@@ -257,14 +283,24 @@ namespace nanoframework.OledDisplay1306
             //SendI2CCommand(Commands.DisplayOn); // commented to avoid screen on with jam filling
         }
 
+        /// <summary>
+        /// sleep display ???
+        /// </summary>
         public void Sleep()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(0x8D);
+            SendI2CCommand(0x10);
+            SendI2CCommand(0xAE);
         }
 
+        /// <summary>
+        /// Wakeup display ???
+        /// </summary>
         public void WakeUp()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(0x8D);
+            SendI2CCommand(0x14);
+            SendI2CCommand(0xAF);
         }
 
         /// <summary>
@@ -284,14 +320,20 @@ namespace nanoframework.OledDisplay1306
         }
 
 
+        /// <summary>
+        /// Invert display color (pixel set to 0 = light on)
+        /// </summary>
         public void InvertDisplay()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(Commands.InvertDisplay);
         }
 
+        /// <summary>
+        /// Set normal display color (pixel set to 0 = light off)
+        /// </summary>
         public void NormalDisplay()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(Commands.NormalDisplay);
         }
 
 
@@ -315,25 +357,46 @@ namespace nanoframework.OledDisplay1306
             SendI2CCommand(comdetect); //0x40 default, to lower the contrast, put 0
         }
 
+        /// <summary>
+        /// Define brightness
+        /// </summary>
+        /// <param name="brightness"></param>
         public void SetBrightness(byte brightness)
         {
-            throw new NotImplementedException();
+            byte contrast;
+            if (brightness < 128)
+            {
+                // Magic values to get a smooth/ step-free transition
+                contrast = (byte)(brightness * 1.171);
+            }
+            else
+                contrast = (byte)(brightness * 1.171 - 43);
+
+            SetContrast(contrast, (brightness==0)? (byte)0 : (byte)241,(byte)(brightness / 8));
         }
 
-
+        /// <summary>
+        /// Restore native screen orientation/morroring 
+        /// </summary>
         public void ResetOrientation()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(Commands.SegRemap);
+            SendI2CCommand(Commands.ComScanInc); //Reset screen rotation or mirroring
         }
 
+        /// <summary>
+        /// Flip screen vertically
+        /// </summary>
         public void FlipScreenVertically()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(Commands.SegRemap | 0x01);
+            SendI2CCommand(Commands.ComScanDec);  //Rotate screen 180 Deg
         }
 
         public void MirrorScreen()
         {
-            throw new NotImplementedException();
+            SendI2CCommand(Commands.SegRemap);
+            SendI2CCommand(Commands.ComScanDec); //Mirror screen
         }
 
         public void SetLogBuffer(UInt16 lines,UInt16 chars)
