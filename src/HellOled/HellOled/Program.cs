@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Device.Gpio;
 using nanoFramework.Hardware.Esp32;
 using Windows.Devices.I2c;
+using HeltecLib;
 
 namespace HellOled
 {
@@ -17,7 +18,7 @@ namespace HellOled
             // Heltec oled TEST
             var heltec = new HeltecOled();
             heltec.Begin();
-            heltec.Display.SetContrast(0);
+            heltec.Display.SetContrast(20);
 
             // BLINK LED TO WAIT
             int counter = 0;

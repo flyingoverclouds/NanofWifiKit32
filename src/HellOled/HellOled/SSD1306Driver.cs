@@ -1,66 +1,92 @@
-﻿using System;
+﻿/*********************************************************************************************
+ * SSD1306 library - 
+ * This C# library is heavily based on the original C/C++ Thingpulse Arduino SSD1306 library.
+ * It integrate some Heltec board specificity.
+ * It has been redesigned to respect C#/.Net/Nanoframework best practices & constraint.
+ * 
+ * (c) Nicolas Clerc - Novembre 2020
+ * 
+ * ------- VERSION
+ * v202011 : only with simple buffering
+ * 
+ *-------- LICENSE
+ * The MIT License (MIT)
+ *
+ * Original C library Copyright (c) 2020 by ThingPulse, Daniel Eichhorn
+ * Copyright (c) 2020 by Nicolas CLERC for the C# port
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+*/
+using System;
 using System.Device.Gpio;
 using System.Threading;
 using Windows.Devices.I2c;
 
-namespace HellOled
+namespace nanoframework.OledDisplay1306
 {
-    class SSD1306Driver
+    public enum OledColor
     {
-        const byte DisplayWidth = 128;
-        const byte DisplayHeight = 64;
-        const int DisplayBufferSize = 1024;
-
-        class Commands 
-        {
-            public const byte ChargePump = 0x8D;
-            public const byte ColumnAddress = 0x21;
-            public const byte ComScanDec = 0xC8;
-            public const byte ComScanInc = 0xC0;
-            public const byte DisplayAllOn = 0xA5;
-            public const byte DisplayAllOnResume = 0xA4;
-            public const byte DisplayOff = 0xAE;
-            public const byte DisplayOn = 0xAF;
-            public const byte ExternalVCC = 0x01;
-            public const byte InvertDisplay = 0xA7;
-            public const byte MemoryMode = 0x20;
-            public const byte NormalDisplay = 0xA6;
-            public const byte PageAddress = 0x22;
-            public const byte SegRemap = 0xA0;
-            public const byte SetComPins = 0xDA;
-            public const byte SetContrast = 0x81;
-            public const byte SetDisplayClockDiv = 0xD5;
-            public const byte SetDisplayOffSet = 0xD3;
-            public const byte SetHighColumn = 0x10;
-            public const byte SetLowColumn = 0x00;
-            public const byte SetMultiplex = 0xA8;
-            public const byte SetPreCharge = 0xD9;
-            public const byte SetSegmentRemap = 0xA1;
-            public const byte SetStartLine = 0x40;
-            public const byte SetVComDetect = 0xDB;
-            public const byte SetSwitchCapVCC = 0x02;
+        Black = 0,
+        White = 1,
+        Inverse= 2
+    };
 
 
-            //DisplayRatio = 0x80,
-            //NoOffSet = 0x0,
-            //VCCState = 0x14,
-            //LowColumn = 0x0,
-            //DisableLRRemap = 0x12,
-            //NoExternalVcc = 0xCF,
-            //InternalDC = 0xF1,
-            //ComDetect = 0xD8,
-            //SetComDetect = 0x40,
-            //DeactivateScroll = 0x2E,
-            //Reset = 0x0,
-            //PageEndAddress = 0x37
-        }
+    //enum OLEDDISPLAY_GEOMETRY
+    //{
+    //    GEOMETRY_128_64 = 0,
+    //    GEOMETRY_128_32 = 1,
+    //    GEOMETRY_64_32 = 2 //Wireless Stick
+    //};
 
+    public partial class SSD1306Driver : IDisposable
+    {
+
+        public byte DisplayWidth => _displayWidth;
+        readonly byte _displayWidth = 128;
+
+        public byte DisplayHeight => _displayHeight;
+        readonly byte _displayHeight = 64;
+
+        readonly int _displayBufferSize = 1024;
+
+        readonly int _i2cPostCommandSleep=50; // Default in thingpulse code is 50ms. Heltec with onboard screen works fine with 0ms. 
+        public int I2CPostCommandSleep { get { return _i2cPostCommandSleep; } }
+
+
+        public TextAlignment CurrentTextAlignement { get => _currentTextAlignement; set => _currentTextAlignement = value; }
+        TextAlignment _currentTextAlignement = TextAlignment.Left;
+
+
+        public OledColor CurrentColor { get => _currentColor; set => _currentColor = value; }
+        OledColor _currentColor = OledColor.White;
+
+        /// <summary>
+        /// I2C commands value used by the SSD1306 libraray
+        /// </summary>
+      
         byte[] displayBuffer =null;
 
         private I2cDevice i2cbus = null;
         private GpioPin resetPin=null;
 
-        public SSD1306Driver(I2cDevice i2cbus,GpioPin resetPin)
+        public SSD1306Driver(I2cDevice i2cbus,GpioPin resetPin,int i2cPostCommandSleep=50)
         {
             if (i2cbus == null)
                 throw new ArgumentException("I2cDevice instance cannot be null.",nameof(i2cbus));
@@ -72,7 +98,7 @@ namespace HellOled
         public void Init() 
         {
             if (displayBuffer == null)
-                displayBuffer = new byte[DisplayBufferSize];
+                displayBuffer = new byte[_displayBufferSize];
             Clear();
             ResetDisplay(); 
             SendInitCommand();
@@ -80,11 +106,7 @@ namespace HellOled
             DisplayOn();
         }
         
-        public void FlipScreenVertically()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         /// <summary>
         /// This test methid fill the display buffer with random value
         /// </summary>
@@ -132,31 +154,20 @@ namespace HellOled
             for (int n = 0; n < displayBuffer.Length; n++)
                 displayBuffer[n] = 0;
         }
-
-        public void DisplayOn()
-        {
-            SendI2CCommand(Commands.DisplayOn);
-        }
-
-        public void DisplayOff()
-        {
-            SendI2CCommand(Commands.DisplayOff);
-        }
-
         /// <summary>
         /// Send the current display buffer to oled.
         /// </summary>
         public void RefreshDisplay()
         {
-            byte x_offset = (128 - DisplayWidth) / 2;
+            byte x_offset = (byte)((128 - _displayWidth) / 2);
 
             SendI2CCommand(Commands.ColumnAddress);
             SendI2CCommand(x_offset);
-            SendI2CCommand((byte)(x_offset + (DisplayWidth - 1 )));
+            SendI2CCommand((byte)(x_offset + (_displayWidth - 1 )));
 
             SendI2CCommand(Commands.PageAddress);
             SendI2CCommand(0x00);
-            SendI2CCommand((DisplayHeight/8)-1);
+            SendI2CCommand((byte)((_displayHeight/8)-1));
 
             //if (geometry == GEOMETRY_128_64)
             //{
@@ -170,25 +181,17 @@ namespace HellOled
             byte[] img = new byte[displayBuffer.Length+1];
             img[0] = (Byte)Commands.SetStartLine;
             Array.Copy(displayBuffer, 0, img, 1, displayBuffer.Length);
-            //Thread.Sleep(50);
+            Thread.Sleep(_i2cPostCommandSleep);
             i2cbus.Write(img); // Send the display buffer to the screen
         }
 
 
-        public void SetContrast(byte contrastValue)
-        {
-            if (contrastValue > 0x40)
-                throw new ArgumentException("Invalid contrast value : must be between 0(low) and 0x40(high)", nameof(contrastValue));
-            SendI2CCommand(Commands.SetVComDetect);
-            SendI2CCommand(contrastValue);    
-        }
-
             private void ResetDisplay()
         {
             resetPin?.Write(PinValue.Low);
-            Thread.Sleep(50);
+            Thread.Sleep(_i2cPostCommandSleep);
             resetPin?.Write(PinValue.High);
-            Thread.Sleep(50);
+            Thread.Sleep(_i2cPostCommandSleep);
         }
 
 
@@ -201,91 +204,153 @@ namespace HellOled
         private void SendI2CCommand(byte cmd)
         {
             i2cbus.Write(new byte[] { 0x00, cmd }); // TODO: replace with a preallocated buffer
-            Thread.Sleep(50);
+            Thread.Sleep(_i2cPostCommandSleep);
         }
 
 
 
         /// <summary>
         /// Send the initialization sequence of command to active the oled screen.
+        /// Display remain OFF (you need to explicitly call DisplayOn() )
         /// </summary>
         private void SendInitCommand()
         {
-            //sendCommand(DISPLAYOFF);
             SendI2CCommand(Commands.DisplayOff);
-
-            //sendCommand(SETDISPLAYCLOCKDIV);
             SendI2CCommand(Commands.SetDisplayClockDiv);
-            //sendCommand(0xF0); // Increase speed of the display max ~96Hz
             SendI2CCommand(0xF0); // Increase speed of the display max ~96Hz
-
-            //sendCommand(SETMULTIPLEX);
             SendI2CCommand(Commands.SetMultiplex);
-            //sendCommand(this->height() - 1);
-            SendI2CCommand(DisplayHeight - 1);
-
-            //sendCommand(SETDISPLAYOFFSET);
+            SendI2CCommand((byte)(_displayHeight - 1));
             SendI2CCommand(Commands.SetDisplayOffSet);
-            //sendCommand(0x00);
             SendI2CCommand(0x00);
-
-            //sendCommand(SETSTARTLINE);
             SendI2CCommand(Commands.SetStartLine);
-
-            //sendCommand(CHARGEPUMP);
             SendI2CCommand(Commands.ChargePump);
-            //sendCommand(0x14);
             SendI2CCommand(0x14);
-
-            //sendCommand(MEMORYMODE);
             SendI2CCommand(Commands.MemoryMode);
-            //sendCommand(0x00);
             SendI2CCommand(0x00);
-
-            //sendCommand(SEGREMAP);
             SendI2CCommand(Commands.SegRemap);
-
-            //sendCommand(COMSCANINC);
             SendI2CCommand(Commands.ComScanInc);
-
-            //sendCommand(SETCOMPINS);
             SendI2CCommand(Commands.SetComPins);
-            //if ((geometry == GEOMETRY_128_64) || (geometry == GEOMETRY_64_32))
-            //    sendCommand(0x12);
+            //if ((geometry == GEOMETRY_128_64) || (geometry == GEOMETRY_64_32)) {
             SendI2CCommand(0x12);
+            // } else if (geometry == GEOMETRY_128_32) {
+            //SendI2CCommand(0x02);
+            //}
 
-            //sendCommand(SETCONTRAST);
             SendI2CCommand(Commands.SetContrast);
-            //if ((geometry == GEOMETRY_128_64) || (geometry == GEOMETRY_64_32))
-            //{
+
+            //if ((geometry == GEOMETRY_128_64) || (geometry == GEOMETRY_64_32)){
             //    sendCommand(0xCF);
             SendI2CCommand(0xCF);
-            //}
-            //else if (geometry == GEOMETRY_128_32)
-            //{
-            //    sendCommand(0x8F);
+            //} else if (geometry == GEOMETRY_128_32){
+            //    SendI2CCommand(0x8F);
             //}
 
-            //sendCommand(SETPRECHARGE);
             SendI2CCommand(Commands.SetPreCharge);
-            //sendCommand(0xF1);
             SendI2CCommand(0xF1);
 
-            //sendCommand(SETVCOMDETECT); //0xDB, (additionally needed to lower the contrast)
             SendI2CCommand(Commands.SetVComDetect);
-            //sendCommand(0x40);          
             SendI2CCommand(0x40);    //0x40 default, to lower the contrast, put 0
 
-            //sendCommand(DISPLAYALLON_RESUME);
             SendI2CCommand(Commands.DisplayAllOnResume);
-            //sendCommand(NORMALDISPLAY);
             SendI2CCommand(Commands.NormalDisplay);
-            //sendCommand(0x2e);            // stop scroll
             SendI2CCommand(0x2e); // Stop scroll
-            //sendCommand(DISPLAYON);
-            //SendI2CCommand(Commands.DisplayOn);
+            //SendI2CCommand(Commands.DisplayOn); // commented to avoid screen on with jam filling
+        }
+
+        public void Sleep()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WakeUp()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Activate display
+        /// </summary>
+        public void DisplayOn()
+        {
+            SendI2CCommand(Commands.DisplayOn);
+        }
+
+        /// <summary>
+        /// Deactivate display 
+        /// </summary>
+        public void DisplayOff()
+        {
+            SendI2CCommand(Commands.DisplayOff);
         }
 
 
+        public void InvertDisplay()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NormalDisplay()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        /// <summary>
+        /// Define the oled crontrast & brightness
+        /// Really low brightness & contrast: contrast = 10, precharge = 5, comdetect = 0
+        /// normal brightness & contrast:  contrast = 100
+        /// To reset contrast : call the function with all parameters default value.
+        /// </summary>
+        /// <param name="contrastValue">0 to 255. Default is 0xCF</param>
+        /// <param name="precharge">1 to 0x1F for low contrast, 0xF1 default. </param>
+        /// <param name="comdetect">0 for low contract, Default is 0x40</param>
+        public void SetContrast(byte contrastValue=0xCF,byte precharge=0xF1,byte comdetect=0x40)
+        {
+            SendI2CCommand(Commands.SetPreCharge);
+            SendI2CCommand(precharge); //0xF1 default, to lower the contrast, put 1-1F
+            SendI2CCommand(Commands.SetContrast);
+            SendI2CCommand(contrastValue); // 0-255
+            SendI2CCommand(Commands.SetVComDetect); //(additionally needed to lower the contrast)
+            SendI2CCommand(comdetect); //0x40 default, to lower the contrast, put 0
+        }
+
+        public void SetBrightness(byte brightness)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void ResetOrientation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FlipScreenVertically()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MirrorScreen()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetLogBuffer(UInt16 lines,UInt16 chars)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLogBuffer(UInt16 x, UInt16 y)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        public void Dispose()
+        {
+            //TODO: TO IMPLEMENT !!!
+        }
     }
 }

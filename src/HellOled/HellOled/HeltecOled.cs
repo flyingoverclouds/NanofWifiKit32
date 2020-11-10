@@ -3,8 +3,9 @@ using System;
 using System.Device.Gpio;
 using System.Threading;
 using Windows.Devices.I2c;
+using nanoframework.OledDisplay1306;
 
-namespace HellOled
+namespace HeltecLib
 {
     class HeltecOled 
     {
@@ -37,7 +38,7 @@ namespace HellOled
             Configuration.SetPinFunction(WifiKit32Common.OnBoardOled.Clock, DeviceFunction.I2C1_CLOCK);
             i2cBusSSD1306 = I2cDevice.FromId("I2C1", new I2cConnectionSettings(WifiKit32Common.OnBoardOled.I2CAddress) { BusSpeed = I2cBusSpeed.FastMode, SharingMode = I2cSharingMode.Exclusive }); // use the 400khz, but HeltecOled should support higher speed up to  700khz
 
-            ssd1306 = new SSD1306Driver(i2cBusSSD1306,oledReset);
+            ssd1306 = new SSD1306Driver(i2cBusSSD1306,oledReset,0 /* Heltec onboard oled support 0ms */);
 
             ssd1306.Init();
             //ssd1306.FlipScreenVertically();
