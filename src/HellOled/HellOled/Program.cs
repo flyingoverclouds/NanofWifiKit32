@@ -20,6 +20,10 @@ namespace HellOled
             oledScreen.DrawHorizontalLine(20, 32, 88);
             oledScreen.DrawVerticalLine(64, 10, 44);
             oledScreen.DrawRect(30, 15, 68, 34);
+            oledScreen.CurrentColor = OledColor.Inverse;
+            oledScreen.FillRect(35, 20, 58, 24);
+            oledScreen.CurrentColor = OledColor.White;
+
         }
 
         public static void Main()

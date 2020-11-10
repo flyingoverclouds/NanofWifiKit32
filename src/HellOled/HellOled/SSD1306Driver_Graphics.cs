@@ -30,13 +30,13 @@ namespace nanoframework.OledDisplay1306
         }
 
 
-        int abs(int v)
+        private int abs(int v)
         {
             // localimplementation of Abs() to avoid including a full Math package
             return (v < 0) ? -v : v;
         }
 
-        void swap<T>(ref T a, ref T b)
+        private void swap<T>(ref T a, ref T b)
         {
             T c = a;
             a = b;
@@ -116,9 +116,19 @@ namespace nanoframework.OledDisplay1306
             DrawHorizontalLine(x, y + height - 1, width);
         }
 
-        public void FillRect(UInt16 x0, UInt16 y0, UInt16 x1, UInt16 y1)
+        /// <summary>
+        /// Draw a filled rectangle box using the currentcolor for border and filler.
+        /// </summary>
+        /// <param name="x">Top Left X coordinate</param>
+        /// <param name="y">Top Left Y coordinate</param>
+        /// <param name="width">Width of rectangle </param>
+        /// <param name="height">Height of rectangle</param>
+        public void FillRect(int x, int y, int width, int height)
         {
-            throw new NotImplementedException();
+            for (int xm = x; xm < x + width; xm++)
+            {
+                DrawVerticalLine(xm, y, height);
+            }
         }
 
         public void DrawCircle(UInt16 x0, UInt16 y0, UInt16 radius)
@@ -206,12 +216,9 @@ namespace nanoframework.OledDisplay1306
 
             int yOffset = (byte)(y & 7);
             byte drawBit;
-            //uint8_t* bufferPtr = buffer;
             int bufferNdx = 0;
 
-            //bufferPtr += (y >> 3) * this->width();
             bufferNdx += (y >> 3) * _displayWidth;
-            //bufferPtr += x;
             bufferNdx += x;
 
             if (yOffset!=0)
@@ -227,15 +234,12 @@ namespace nanoframework.OledDisplay1306
                 switch (CurrentColor)
                 {
                     case OledColor.White:
-                        //        case WHITE: *bufferPtr |= drawBit; break;
                         displayBuffer[bufferNdx] |= drawBit;
                         break;
                     case OledColor.Black:
-                        //        case BLACK: *bufferPtr &= ~drawBit; break;
                         displayBuffer[bufferNdx] &= (byte)~drawBit;
                         break;
                     case OledColor.Inverse:
-                        //        case INVERSE: *bufferPtr ^= drawBit; break;
                         displayBuffer[bufferNdx] ^= drawBit;
                         break;
                 }
@@ -244,7 +248,6 @@ namespace nanoframework.OledDisplay1306
                     return;
 
                 length -= yOffset;
-                //    bufferPtr += this->width();
                 bufferNdx += _displayWidth;
             }
 
