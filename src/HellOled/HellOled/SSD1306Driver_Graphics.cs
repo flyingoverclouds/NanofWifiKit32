@@ -144,7 +144,8 @@ namespace nanoframework.OledDisplay1306
         /// <param name="length">size of line (in pixel)</param>
         public void DrawHorizontalLine(int x, int y, int length)
         {
-            if (y < 0 || y >= _displayHeight) { return; }
+            if (y < 0 || y >= _displayHeight) 
+                return; 
 
             if (x < 0)
             {
@@ -153,15 +154,10 @@ namespace nanoframework.OledDisplay1306
             }
 
             if ((x + length) > _displayWidth)
-            {
                 length = (_displayWidth - x);
-            }
 
             if (length <= 0) { return; }
 
-            //uint8_t* bufferPtr = buffer;
-            //bufferPtr += (y >> 3) * this->width();
-            //bufferPtr += x;
             int bufferNdx = (y >> 3) * _displayWidth;
             bufferNdx += x;
 
@@ -171,33 +167,123 @@ namespace nanoframework.OledDisplay1306
             {
                 case OledColor.White:
                     while (length-- != 0)
-                    {
-                        //            *bufferPtr++ |= drawBit;
                         displayBuffer[bufferNdx++] |= drawBit;
-                    }; 
                     break;
                 case OledColor.Black:
                     drawBit = (byte)(~drawBit); 
                     while (length--!=0)
-                    {
-                        //*bufferPtr++ &= drawBit;
                         displayBuffer[bufferNdx++] &= drawBit;
-
-                    }; 
                     break;
                 case OledColor.Inverse:
                     while (length-- != 0)
-                    {
-                        //            *bufferPtr++ ^= drawBit;
                         displayBuffer[bufferNdx++] ^= drawBit;
-                    }; 
                     break;
             }
         }
 
-        public void DrawVerticalLine(UInt16 x0, UInt16 y0, UInt16 length)
+        public void DrawVerticalLine(int x, int y, int length)
         {
-            throw new NotImplementedException();
+            if (x < 0 || x >= _displayWidth || length==0) return;
+
+            if (y < 0)
+            {
+                length += y;
+                y = 0;
+            }
+
+            if ((y + length) > _displayHeight)
+                length = (_displayHeight - y);
+
+            if (length <= 0) 
+                return;
+
+
+            int yOffset = (byte)(y & 7);
+            byte drawBit;
+            //uint8_t* bufferPtr = buffer;
+            int bufferNdx = 0;
+
+            //bufferPtr += (y >> 3) * this->width();
+            bufferNdx += (y >> 3) * _displayWidth;
+            //bufferPtr += x;
+            bufferNdx += x;
+
+            if (yOffset!=0)
+            {
+                yOffset = 8 - yOffset;
+                drawBit = (byte)~(0xFF >> (yOffset));
+
+                if (length < yOffset)
+                {
+                    drawBit &= (byte) (0xFF >> (yOffset - length));
+                }
+
+                switch (CurrentColor)
+                {
+                    case OledColor.White:
+                        //        case WHITE: *bufferPtr |= drawBit; break;
+                        displayBuffer[bufferNdx] |= drawBit;
+                        break;
+                    case OledColor.Black:
+                        //        case BLACK: *bufferPtr &= ~drawBit; break;
+                        displayBuffer[bufferNdx] &= (byte)~drawBit;
+                        break;
+                    case OledColor.Inverse:
+                        //        case INVERSE: *bufferPtr ^= drawBit; break;
+                        displayBuffer[bufferNdx] ^= drawBit;
+                        break;
+                }
+
+                if (length < yOffset) 
+                    return;
+
+                length -= yOffset;
+                //    bufferPtr += this->width();
+                bufferNdx += _displayWidth;
+            }
+
+            if (length >= 8)
+            {
+                switch (CurrentColor)
+                {
+                    case OledColor.White:
+                    case OledColor.Black:
+                        drawBit =(byte) ((CurrentColor==OledColor.White) ? 0xFF : 0x00);
+                        do
+                        {
+                            displayBuffer[bufferNdx] = drawBit;
+                            bufferNdx += _displayWidth;
+                            length -= 8;
+                        } while (length >= 8);
+                        break;
+                    case OledColor.Inverse:
+                        do
+                        {
+                            displayBuffer[bufferNdx] = (byte)~displayBuffer[bufferNdx];
+                            bufferNdx += _displayWidth;
+                            length -= 8;
+                        } while (length >= 8);
+                        break;
+                }
+            }
+
+            if (length > 0)
+            {
+                drawBit =(byte)( (1 << (length & 7)) - 1);
+                switch (CurrentColor)
+                {
+                    case OledColor.White:
+                        displayBuffer[bufferNdx] |= drawBit;
+                        break;
+                    case OledColor.Black:
+                        displayBuffer[bufferNdx] &= (byte)~drawBit;
+                        break;
+                    case OledColor.Inverse:
+                        displayBuffer[bufferNdx] ^= drawBit;
+                        break;
+                }
+            }
+
         }
 
         public void DrawProgressBar(UInt16 x0, UInt16 y0, UInt16 width, UInt16 height, UInt16 progress)
