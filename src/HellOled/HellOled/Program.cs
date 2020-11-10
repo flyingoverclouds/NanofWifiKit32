@@ -13,17 +13,22 @@ namespace HellOled
     {
         static void DemoGeometry(SSD1306Driver oledScreen)
         {
-            for (short i = 20; i < 108; i+=4)
-                oledScreen.SetPixel(i, 0);
-            oledScreen.DrawLine(0, 0,oledScreen.DisplayWidth - 1, oledScreen.DisplayHeight - 1);
+            //for (short i = 20; i < 108; i+=4)
+            //    oledScreen.SetPixel(i, 0);
+            oledScreen.DrawLine(0, 0, oledScreen.DisplayWidth - 1, oledScreen.DisplayHeight - 1);
             oledScreen.DrawLine(0, oledScreen.DisplayHeight - 1, oledScreen.DisplayWidth - 1, 0);
             oledScreen.DrawHorizontalLine(20, 32, 88);
             oledScreen.DrawVerticalLine(64, 10, 44);
             oledScreen.DrawRect(30, 15, 68, 34);
             oledScreen.CurrentColor = OledColor.Inverse;
-            oledScreen.FillRect(35, 20, 58, 24);
+            oledScreen.FillRect(2, 15, 20, 34);
+            oledScreen.FillRect(106, 15, 20, 34);
+            oledScreen.DrawCircleQuads(30, 0, 30, 0b0100);
+            oledScreen.DrawCircleQuads(98, 0, 30, 0b1000);
+            oledScreen.DrawCircleQuads(30, 64, 30, 0b0010);
+            oledScreen.DrawCircleQuads(98, 64, 30, 0b0001);
             oledScreen.CurrentColor = OledColor.White;
-
+            oledScreen.DrawCircle(64, 31, 30);
         }
 
         public static void Main()

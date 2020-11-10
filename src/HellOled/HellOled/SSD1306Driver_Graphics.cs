@@ -131,14 +131,98 @@ namespace nanoframework.OledDisplay1306
             }
         }
 
-        public void DrawCircle(UInt16 x0, UInt16 y0, UInt16 radius)
+        /// <summary>
+        /// Draw a circle 
+        /// </summary>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="radius">radius un pixel</param>
+        public void DrawCircle(int x0, int y0, int radius)
         {
-            throw new NotImplementedException();
+            int x = 0, y = radius;
+            int dp = 1 - radius;
+            do
+            {
+                if (dp < 0)
+                    dp = dp + 2 * (++x) + 3;
+                else
+                    dp = dp + 2 * (++x) - 2 * (--y) + 5;
+
+                SetPixel(x0 + x, y0 + y);
+                SetPixel(x0 - x, y0 + y);
+                SetPixel(x0 + x, y0 - y);
+                SetPixel(x0 - x, y0 - y);
+                SetPixel(x0 + y, y0 + x);
+                SetPixel(x0 - y, y0 + x);
+                SetPixel(x0 + y, y0 - x);
+                SetPixel(x0 - y, y0 - x);
+            } while (x < y);
+            SetPixel(x0 + radius, y0);
+            SetPixel(x0, y0 + radius);
+            SetPixel(x0 - radius, y0);
+            SetPixel(x0, y0 - radius);
         }
 
-        public void DrawCircleQuad(UInt16 x0, UInt16 y0, UInt16 radius, UInt16 quads)
+        /// <summary>
+        /// Draw part of circle (1/8 of circule)
+        /// quad bitmap mask
+        ///    0b00000001 : 0   -> 90°  quad
+        ///    0b00000010 : 270 -> 360° quad
+        ///    0b00000100 : 180 -> 270° quad
+        ///    0b00001000 : 90  -> 180° quad
+        /// </summary>
+        /// <param name="x0">X center</param>
+        /// <param name="y0"></param>
+        /// <param name="radius">radius in pixel</param>
+        /// <param name="quads">bit mask defining part of circle to draw</param>
+        public void DrawCircleQuads(int x0, int y0, int radius, byte quads)
         {
-            throw new NotImplementedException();
+            int x = 0, y = radius;
+            int dp = 1 - radius;
+            while (x < y)
+            {
+                if (dp < 0)
+                    dp = dp + 2 * (++x) + 3;
+                else
+                    dp = dp + 2 * (++x) - 2 * (--y) + 5;
+                if ((quads & 0x1) !=0)
+                {
+                    SetPixel(x0 + x, y0 - y);
+                    SetPixel(x0 + y, y0 - x);
+                }
+                if ((quads & 0x2)!=0)
+                {
+                    SetPixel(x0 - y, y0 - x);
+                    SetPixel(x0 - x, y0 - y);
+                }
+                if ((quads & 0x4)!=0)
+                {
+                    SetPixel(x0 - y, y0 + x);
+                    SetPixel(x0 - x, y0 + y);
+                }
+                if ((quads & 0x8) !=0)
+                {
+                    SetPixel(x0 + x, y0 + y);
+                    SetPixel(x0 + y, y0 + x);
+                }
+            }
+            if ((quads & 0x1)!=0 && (quads & 0x8)!=0)
+            {
+                SetPixel(x0 + radius, y0);
+            }
+            if ((quads & 0x4)!=0 && (quads & 0x8)!=0)
+            {
+                SetPixel(x0, y0 + radius);
+            }
+            if ((quads & 0x2)!=0 && (quads & 0x4)!=0)
+            {
+                SetPixel(x0 - radius, y0);
+            }
+            if ((quads & 0x1)!=0 && (quads & 0x2)!=0)
+            {
+                SetPixel(x0, y0 - radius);
+            }
+
         }
 
         public void FillCircle(UInt16 x0, UInt16 y0, UInt16 radius)
