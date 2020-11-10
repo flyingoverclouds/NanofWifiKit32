@@ -112,7 +112,7 @@ namespace nanoframework.OledDisplay1306
         /// 1: alternate vertical line
         /// 2: alternate thick vertical line
         /// 3:thin horizontal line
-        /// 4: first 8 byte of display buffer set to 255 (usefull for origin alignment test)
+        /// 4: first 1288 byte of display buffer set to 128+16 (usefull for origin align test)
         /// </summary>
         public void TestFill(int pattern=0)
         {
@@ -144,14 +144,14 @@ namespace nanoframework.OledDisplay1306
                     }
                     break;
                 case 4: // first 128 byte set to same value
-                    for (int i = 0; i < 1024-8; i++)
+                    for (int i = 0; i < 128; i++)
                     {
                         //displayBuffer[1023 - i] = 255;
                         displayBuffer[i] = 128+16;
                     }
                     break;
                 default:
-                    throw new ArgumentException("Pattern value is : 0 --> 3", "pattern");
+                    throw new ArgumentException("Invalid pattern value", "pattern");
             }
         }
 
@@ -182,10 +182,10 @@ namespace nanoframework.OledDisplay1306
         /// </summary>
         public void RefreshDisplay()
         {
-            int x_offset = (128 - _displayWidth) / 2;
+            byte x_offset = (byte)((128 - _displayWidth) / 2);
 
             SendI2CCommand(Commands.ColumnAddress);
-            SendI2CCommand((byte)x_offset);
+            SendI2CCommand(x_offset);
             SendI2CCommand((byte)(x_offset + (_displayWidth - 1 )));
             
 
@@ -201,7 +201,7 @@ namespace nanoframework.OledDisplay1306
             //{
             //    SendI2CCommand(0x3);
             //}
-            SendI2CCommand(0x0); // CORRECT VALUE FOR WIFIKIT32
+            SendI2CCommand(0x0); // VALID VALUE FOR WIFIKIT32
 
 
             byte[] img = new byte[displayBuffer.Length+1];

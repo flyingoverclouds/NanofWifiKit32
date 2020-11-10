@@ -11,12 +11,12 @@ namespace HellOled
 {
     public class Program
     {
-
         static void DemoGeometry(SSD1306Driver oledScreen)
         {
-            oledScreen.Clear();
-            for(ushort i= 0;i< 20;i++)
-                oledScreen.SetPixel(i,i);
+            for (short i = 0; i < 30; i++)
+                oledScreen.SetPixel(60 + i, 0);
+            oledScreen.DrawLine(0, 0,oledScreen.DisplayWidth - 1, oledScreen.DisplayHeight - 1);
+            oledScreen.DrawLine(0, oledScreen.DisplayHeight - 1, oledScreen.DisplayWidth - 1, 0);
         }
 
         public static void Main()
@@ -29,7 +29,7 @@ namespace HellOled
             //heltec.Display.SetContrast(20);
             heltec.Display.SetBrightness(180);
 
-            heltec.Display.InvertDisplay();
+            //heltec.Display.InvertDisplay();
             heltec.Display.FlipScreenVertically();
             heltec.Display.CurrentColor = OledColor.White;
 
@@ -48,8 +48,8 @@ namespace HellOled
                 {
                     case 0:
                         heltec.Display.Clear();
-                        heltec.Display.TestFill(4);
-                        //heltec.Display.TestFill(0);
+                        //heltec.Display.TestFill(4);
+                        heltec.Display.TestFill(0);
                         break;
                     //case 1:
                     //    heltec.Display.Clear();
@@ -64,7 +64,7 @@ namespace HellOled
                     //    heltec.Display.TestFill(3);
                     //    break;
                     case 1:
-                        //heltec.Display.Clear();
+                        heltec.Display.Clear();
                         DemoGeometry(heltec.Display);
                         break;
                 }

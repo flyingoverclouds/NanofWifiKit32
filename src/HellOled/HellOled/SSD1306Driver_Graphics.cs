@@ -4,36 +4,87 @@ namespace nanoframework.OledDisplay1306
 {
     public partial class SSD1306Driver
     {
-        public void SetPixel(UInt16 x,UInt16 y)
+        public void SetPixel(int x, int y)
         {
-            //if (x >= 0 && x < this->width() && y >= 0 && y < this->height())
             if (x>=0 && x<_displayWidth && y>=0 && y< _displayHeight)
             {
                 switch (_currentColor)
                 {
                     case OledColor.White:
-                        //        case WHITE: buffer[x + (y / 8) * this->width()] |= (1 << (y & 7)); break;
                          displayBuffer[x + (y / 8) * _displayWidth] |= (byte)(1 << (y & 7));
                         break;
                     case OledColor.Black:
-                        //        case BLACK: buffer[x + (y / 8) * this->width()] &= ~(1 << (y & 7)); break;
                         displayBuffer[x + (y / 8) * _displayWidth] &= (byte)~(1 << (y & 7));
                         break;
                     case OledColor.Inverse:
-                        //        case INVERSE: buffer[x + (y / 8) * this->width()] ^= (1 << (y & 7)); break;
                         displayBuffer[x + (y / 8) * _displayWidth] ^= (byte)(1 << (y & 7));
                         break;
                 }
             }
-            if(x==0&&y==0)
-            {
-                displayBuffer[x + (y / 8) * _displayWidth] |= 128;
-            }
         }
 
-        public void DrawLine(UInt16 x0, UInt16 y0,UInt16 x1, UInt16 y1)
+
+        int abs(int v)
         {
-            throw new NotImplementedException();
+            // localimplementation of Abs() to avoid including a full Math package
+            return (v < 0) ? -v : v;
+        }
+
+        void swap<T>(ref T a, ref T b)
+        {
+            T c = a;
+            a = b;
+            b = c;
+        }
+
+        public void DrawLine(int x0, int y0, int x1, int y1)
+        {
+            var steep = abs(y1 - y0) > abs(x1 - x0);
+            if (steep)
+            {
+                swap(ref x0, ref y0);
+                swap(ref x1, ref y1);
+            }
+
+            if (x0 > x1)
+            {
+                swap(ref x0, ref x1);
+                swap(ref y0, ref y1);
+            }
+
+            var dx = (x1 - x0);
+            var dy = abs(y1 - y0);
+
+            var err = (dx / 2);
+            int ystep;
+
+            if (y0 < y1)
+            {
+                ystep = 1;
+            }
+            else
+            {
+                ystep = -1;
+            }
+
+            for (; x0 <= x1; x0++)
+            {
+                if (steep)
+                {
+                    SetPixel(y0,x0);
+                }
+                else
+                {
+                    SetPixel(x0, y0);
+                }
+                err -= dy;
+                if (err < 0)
+                {
+                    y0 +=  ystep;
+                    err += dx;
+                }
+            }
+
         }
 
         public void DrawRect(UInt16 x0, UInt16 y0, UInt16 x1, UInt16 y1)
