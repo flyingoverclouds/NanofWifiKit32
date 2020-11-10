@@ -27,6 +27,7 @@ namespace HellOled
             oledScreen.DrawCircleQuads(98, 0, 30, 0b1000);
             oledScreen.DrawCircleQuads(30, 64, 30, 0b0010);
             oledScreen.DrawCircleQuads(98, 64, 30, 0b0001);
+            oledScreen.FillCircle(64, 31, 12);
             oledScreen.CurrentColor = OledColor.White;
             oledScreen.DrawCircle(64, 31, 30);
         }

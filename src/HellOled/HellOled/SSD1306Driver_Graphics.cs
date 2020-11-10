@@ -132,7 +132,7 @@ namespace nanoframework.OledDisplay1306
         }
 
         /// <summary>
-        /// Draw a circle 
+        /// Draw an empty circle 
         /// </summary>
         /// <param name="x0">X center</param>
         /// <param name="y0">Y center</param>
@@ -207,27 +207,38 @@ namespace nanoframework.OledDisplay1306
                 }
             }
             if ((quads & 0x1)!=0 && (quads & 0x8)!=0)
-            {
                 SetPixel(x0 + radius, y0);
-            }
             if ((quads & 0x4)!=0 && (quads & 0x8)!=0)
-            {
                 SetPixel(x0, y0 + radius);
-            }
             if ((quads & 0x2)!=0 && (quads & 0x4)!=0)
-            {
                 SetPixel(x0 - radius, y0);
-            }
             if ((quads & 0x1)!=0 && (quads & 0x2)!=0)
-            {
                 SetPixel(x0, y0 - radius);
-            }
-
         }
 
-        public void FillCircle(UInt16 x0, UInt16 y0, UInt16 radius)
+        /// <summary>
+        /// Draw an filled circle 
+        /// </summary>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="radius">radius un pixel</param>
+        public void FillCircle(int x0, int y0, int radius)
         {
-            throw new NotImplementedException();
+            int x = 0, y = radius;
+            int dp = 1 - radius;
+            do
+            {
+                if (dp < 0)
+                    dp = dp + 2 * (++x) + 3;
+                else
+                    dp = dp + 2 * (++x) - 2 * (--y) + 5;
+
+                DrawHorizontalLine(x0 - x, y0 - y, 2 * x);
+                DrawHorizontalLine(x0 - x, y0 + y, 2 * x);
+                DrawHorizontalLine(x0 - y, y0 - x, 2 * y);
+                DrawHorizontalLine(x0 - y, y0 + x, 2 * y);
+            } while (x < y);
+            DrawHorizontalLine(x0 - radius, y0, 2 * radius);
         }
 
         /// <summary>
