@@ -527,11 +527,27 @@ namespace nanoframework.OledDisplay1306
         }
 
 
+        /// <summary>
+        /// Draw a an XBM image on a specified position on screen.
+        /// (nanoframework exclusive).
+        /// </summary>
+        /// <param name="x">Top left X of image</param>
+        /// <param name="y">Top left Y of image</param>
+        /// <param name="image">instance of XbmImage</param>
         public void DrawXbm(int x, int y, XbmImage image)
         {
             DrawXbm(x, y, image.Width, image.Height, image.Datas);
         }
 
+        /// <summary>
+        /// Draw a image in XBM format on a specified position on screen.
+        /// (legacy signature).
+        /// </summary>
+        /// <param name="xMove">Top left X of image</param>
+        /// <param name="yMove">Top left Y of image</param>
+        /// <param name="width">width of the the bitmap</param>
+        /// <param name="height">height of the bitmaps</param>
+        /// <param name="xbm">xbm image</param>
         public void DrawXbm(int xMove, int yMove, int width, int height, byte[] xbm)
         {
             int widthInXbm = (width + 7) / 8;
@@ -542,13 +558,12 @@ namespace nanoframework.OledDisplay1306
                 for (int x = 0; x < width; x++)
                 {
                     if ((x & 7)!=0)
-                        data >>= 1; // Move a bit
+                        data >>= 1; 
                     else
                     {  
                         data = xbm[(x / 8) + y * widthInXbm];
                     }
                     
-                    // if there is a bit draw it
                     if ((data & 0x01)!=0)
                     {
                         SetPixel(xMove + x, yMove + y);
