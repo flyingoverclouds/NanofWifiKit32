@@ -420,10 +420,110 @@ namespace nanoframework.OledDisplay1306
             FillCircle(xRadius + maxProgressWidth, yRadius, innerRadius);
         }
 
+        /// <summary>
+        /// NOT TESTED
+        /// </summary>
+        /// <param name="xMove"></param>
+        /// <param name="yMove"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        private void DrawImageInternal(int xMove, int yMove, int width, int height, byte[] data, int offset)
+        {
+            var bytesInData = data.Length;
+
+            if (width < 0 || height < 0) return;
+            if (yMove + height < 0 || yMove > _displayHeight) return;
+            if (xMove + width < 0 || xMove > _displayWidth) return;
+
+            int rasterHeight = 1 + ((height - 1) >> 3); // fast ceil(height / 8.0)
+            int yOffset = yMove & 7;
+
+            bytesInData = bytesInData == 0 ? width * rasterHeight : bytesInData;
+
+            int initYMove = yMove;
+            int initYOffset = yOffset;
+
+            for (int i = 0; i < bytesInData; i++)
+            {
+                // Reset if next horizontal drawing phase is started.
+                if (i % rasterHeight == 0)
+                {
+                    yMove = initYMove;
+                    yOffset = initYOffset;
+                }
+
+                byte currentByte = data[offset+i] ;//pgm_read_byte(data + offset + i);
+
+                int xPos = xMove + (i / rasterHeight);
+                int yPos = ((yMove >> 3) + (i % rasterHeight)) * _displayWidth;
+
+                //    int16_t yScreenPos = yMove + yOffset;
+                int dataPos = xPos + yPos;
+
+                if (dataPos >= 0 && dataPos < _displayBufferSize &&
+                    xPos >= 0 && xPos < _displayWidth)
+                {
+
+                    if (yOffset >= 0)
+                    {
+                        switch (CurrentColor)
+                        {
+                            case OledColor.White: displayBuffer[dataPos] |= (byte)(currentByte << yOffset); break;
+                            case OledColor.Black: displayBuffer[dataPos] &= (byte)(~(currentByte << yOffset)); break;
+                            case OledColor.Inverse: displayBuffer[dataPos] ^= (byte)(currentByte << yOffset); break;
+                        }
+
+                        if (dataPos < (_displayBufferSize - _displayWidth))
+                        {
+                            switch (CurrentColor)
+                            {
+                                case OledColor.White: displayBuffer[dataPos + _displayWidth] |= (byte)(currentByte >> (8 - yOffset)); break;
+                                case OledColor.Black: displayBuffer[dataPos + _displayWidth] &= (byte)(~(currentByte >> (8 - yOffset))); break;
+                                case OledColor.Inverse: displayBuffer[dataPos + _displayWidth] ^= (byte)(currentByte >> (8 - yOffset)); break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Make new offset position
+                        yOffset = -yOffset;
+
+                        switch (CurrentColor)
+                        {
+                            case OledColor.White: displayBuffer[dataPos] |= (byte)(currentByte >> yOffset); break;
+                            case OledColor.Black: displayBuffer[dataPos] &= (byte)(~(currentByte >> yOffset)); break;
+                            case OledColor.Inverse: displayBuffer[dataPos] ^= (byte)(currentByte >> yOffset); break;
+                        }
+
+                        // Prepare for next iteration by moving one block up
+                        yMove -= 8;
+
+                        // and setting the new yOffset
+                        yOffset = 8 - yOffset;
+                    }
+
+                    //yield();
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// NOT TESTED
+        /// </summary>
+        /// <param name="x0"></param>
+        /// <param name="y0"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="image"></param>
         public void DrawFastImage(int x0, int y0, int width, int height, byte[] image )
         {
-            //drawInternal(xMove, yMove, width, height, image, 0, 0);
-            throw new NotImplementedException();
+            // TODO : TO TEST !!!
+            if (image == null)
+                throw new ArgumentException("cannot be null", nameof(image));
+            DrawImageInternal(x0, y0, width, height, image, 0);
         }
 
 
