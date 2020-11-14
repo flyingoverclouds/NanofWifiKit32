@@ -26,6 +26,7 @@
     <Compile Include="SSD1306Driver_Text.cs" />
     <Compile Include="SSD1306Driver_Graphics.cs" />
     <Compile Include="SSD1306i2cCommands.cs" />
+    <Compile Include="XbmImage.cs" />
     <Compile Include="XBMSamples.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\WifiKit32Common\WifiKit32Common.nfproj" />
+    <ProjectReference Include="..\OledFonts\OledFonts.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

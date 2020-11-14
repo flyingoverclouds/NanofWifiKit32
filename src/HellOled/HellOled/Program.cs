@@ -6,6 +6,7 @@ using nanoFramework.Hardware.Esp32;
 using Windows.Devices.I2c;
 using HeltecLib;
 using nanoframework.OledDisplay1306;
+using OledFonts;
 
 namespace HellOled
 {
@@ -39,11 +40,18 @@ namespace HellOled
         {
             Random rnd = new Random();
             oledScreen.DrawProgressBar(5, 5, 118, 10, rnd.Next(100));
-            oledScreen.DrawXbm(64, 20, wifiLogo.Width, wifiLogo.Height, wifiLogo.Datas); // original lib signature
-            oledScreen.DrawXbm(0, 20, nanofLogo); // dotnet style signature
+            oledScreen.DrawXbm(64, 22, wifiLogo.Width, wifiLogo.Height, wifiLogo.Datas); // legacy lib signature
+            oledScreen.DrawXbm(20, 22, nanofLogo); // modern dotnet signature
         }
 
-        
+        static void DemoScreen3(SSD1306Driver oledScreen)
+        {
+            oledScreen.Clear();
+            oledScreen.DrawChar(10, 10, 'N');
+            oledScreen.DrawChar(20, 10, 'i');
+            oledScreen.DrawChar(30, 10, 'C');
+            oledScreen.DrawChar(40, 10, '0');
+        }
         public static void Main()
         {
             Debug.WriteLine("[HellOled] : a hello word with the embedded OLED screen.");
@@ -65,8 +73,10 @@ namespace HellOled
             GpioPin led = gpioc.OpenPin(WifiKit32Common.OnBoardDevicePortNumber.Led, PinMode.Output);
             led.Write(PinValue.Low);
 
-            wifiLogo = XBMSamples.GetLoraXBM();
+            wifiLogo = XBMSamples.GetWifiLogoXBM();
             nanofLogo = XBMSamples.GetNanoFrameworkXBM();
+
+            heltec.Display.CurrentFont = OledFonts.FontArialMTPlain10.GetFont();
             
             while (true)
             {
@@ -96,6 +106,10 @@ namespace HellOled
                     case 2:
                         heltec.Display.Clear();
                         DemoScreen2(heltec.Display);
+                        break;
+                    case 3:
+                        heltec.Display.Clear();
+                        DemoScreen3(heltec.Display);
                         break;
                     default:
                         counter = -1; // there is the ++ at the end of loop
