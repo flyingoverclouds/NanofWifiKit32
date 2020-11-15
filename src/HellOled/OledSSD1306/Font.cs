@@ -6,6 +6,11 @@ namespace OledFonts
     /// </summary>
     public class Font
     {
+        public Font(byte[] data)
+        {
+            this.LegacyFont = data;
+        }
+        
         /// <summary>
         /// Legac byte array (same structure as the original SSD1306 Fonts)
         /// </summary>

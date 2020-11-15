@@ -3,7 +3,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Device.Gpio;
 using nanoFramework.Hardware.Esp32;
-using Windows.Devices.I2c;
+using System.Device.I2c;
 using HeltecLib;
 using nanoframework.OledDisplay1306;
 using OledFonts;
@@ -17,8 +17,6 @@ namespace HellOled
 
         static void DemoGeometry(SSD1306Driver oledScreen)
         {
-            //for (short i = 20; i < 108; i+=4)
-            //    oledScreen.SetPixel(i, 0);
             oledScreen.DrawLine(0, 0, oledScreen.DisplayWidth - 1, oledScreen.DisplayHeight - 1);
             oledScreen.DrawLine(0, oledScreen.DisplayHeight - 1, oledScreen.DisplayWidth - 1, 0);
             oledScreen.DrawHorizontalLine(20, 32, 88);
@@ -47,10 +45,31 @@ namespace HellOled
         static void DemoScreen3(SSD1306Driver oledScreen)
         {
             oledScreen.Clear();
-            oledScreen.DrawChar(10, 10, 'N');
-            oledScreen.DrawChar(20, 10, 'i');
-            oledScreen.DrawChar(30, 10, 'C');
-            oledScreen.DrawChar(40, 10, '0');
+            oledScreen.CurrentFont = OledFonts.FontArialMTPlain10.GetFont();
+            int w = 0;
+            int x = 1;
+            w = oledScreen.DrawChar(x += w, 1, 'N');
+            w = oledScreen.DrawChar(x += w, 1, 'i');
+            w = oledScreen.DrawChar(x += w, 1, 'C');
+            w = oledScreen.DrawChar(x += w, 1, 'o');
+
+            oledScreen.CurrentFont = OledFonts.FontArialMTPlain16.GetFont();
+            w = 0;
+            x = 1;
+            w = oledScreen.DrawChar(x += w, 11, 'n');
+            w = oledScreen.DrawChar(x += w, 11, 'I');
+            w = oledScreen.DrawChar(x += w, 11, 'c');
+            w = oledScreen.DrawChar(x += w, 11, '0');
+
+            oledScreen.CurrentFont = OledFonts.FontArialMTPlain24.GetFont();
+            w = 0;
+            x = 1;
+            w = oledScreen.DrawChar(x += w, 30, 'N');
+            w = oledScreen.DrawChar(x += w, 30, '1');
+            w = oledScreen.DrawChar(x += w, 30, 'c');
+            w = oledScreen.DrawChar(x += w, 30, 'o');
+
+
         }
         public static void Main()
         {
@@ -77,7 +96,7 @@ namespace HellOled
             nanofLogo = XBMSamples.GetNanoFrameworkXBM();
 
             heltec.Display.CurrentFont = OledFonts.FontArialMTPlain10.GetFont();
-            
+
             while (true)
             {
                 switch(counter)

@@ -35,7 +35,7 @@
 using System;
 using System.Device.Gpio;
 using System.Threading;
-using Windows.Devices.I2c;
+using System.Device.I2c;
 
 namespace nanoframework.OledDisplay1306
 {
@@ -45,6 +45,33 @@ namespace nanoframework.OledDisplay1306
         White = 1,
         Inverse= 2
     };
+
+    /// <summary>
+    /// Define alignement of text for Text oriented method
+    /// </summary>
+    public enum TextAlignment
+    {
+        /// <summary>
+        /// Text aligned on LEFT
+        /// </summary>
+        Left = 0,
+
+        /// <summary>
+        /// Text aligned on RIGHT
+        /// </summary>
+        Right = 1,
+
+        /// <summary>
+        /// Text CENTERED on the line
+        /// </summary>
+        Center = 2,
+
+        /// <summary>
+        /// Text vertically AND horizontally CENTERED
+        /// </summary>
+        CenterBoth = 3
+    };
+
 
 
     //enum OLEDDISPLAY_GEOMETRY
@@ -69,8 +96,8 @@ namespace nanoframework.OledDisplay1306
         public int I2CPostCommandSleep { get { return _i2cPostCommandSleep; } }
 
 
-        public TextAlignment CurrentTextAlignement { get => _currentTextAlignement; set => _currentTextAlignement = value; }
-        TextAlignment _currentTextAlignement = TextAlignment.Left;
+        //public TextAlignment CurrentTextAlignement { get => _currentTextAlignement; set => _currentTextAlignement = value; }
+        //TextAlignment _currentTextAlignement = TextAlignment.Left;
 
 
         public OledColor CurrentColor { get => _currentColor; set => _currentColor = value; }

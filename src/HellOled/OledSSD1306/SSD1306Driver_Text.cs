@@ -4,32 +4,6 @@ using System.Diagnostics;
 
 namespace nanoframework.OledDisplay1306
 {
-    /// <summary>
-    /// Define alignement of text for Text oriented method
-    /// </summary>
-    public enum TextAlignment
-    {
-        /// <summary>
-        /// Text aligned on LEFT
-        /// </summary>
-        Left = 0,
-        
-        /// <summary>
-        /// Text aligned on RIGHT
-        /// </summary>
-        Right = 1,
-        
-        /// <summary>
-        /// Text CENTERED on the line
-        /// </summary>
-        Center = 2,
-
-        /// <summary>
-        /// Text vertically AND horizontally CENTERED
-        /// </summary>
-        CenterBoth = 3
-    };
-
 
     public partial class SSD1306Driver
     {
@@ -83,116 +57,15 @@ namespace nanoframework.OledDisplay1306
 
 
         /// <summary>
-        /// xMove & yMOve is the origine of drawing. For centered aligned, this is the center of the line
+        /// Draw a char from the font data on a specified position
         /// </summary>
         /// <param name="xMove"></param>
         /// <param name="yMove"></param>
-        /// <param name="text"></param>
-        /// <param name="textWidth"></param>
-        private void DrawStringInternal_LEGACY(int xMove, int yMove, byte[] text, int textWidth)
-        {
-            int textLength = text.Length;
-
-            int textHeight = _currentFontData[HEIGHT_POS];//pgm_read_byte(fontData + HEIGHT_POS);
-            byte firstChar = _currentFontData[FIRST_CHAR_POS];// pgm_read_byte(fontData + FIRST_CHAR_POS);
-            int sizeOfJumpTable = _currentFontData[CHAR_NUM_POS] * JUMPTABLE_BYTES; //pgm_read_byte(fontData + CHAR_NUM_POS) * JUMPTABLE_BYTES;
-
-
-            int cursorX = 0;
-            int cursorY = 0;
-
-            switch (CurrentTextAlignement)
-            {
-                case TextAlignment.CenterBoth:
-                    yMove -= textHeight >> 1;
-                    xMove -= textWidth >> 1; // divide by 2
-                    break;
-                case TextAlignment.Center:
-                    xMove -= textWidth >> 1; // divide by 2
-                    break;
-                case TextAlignment.Right:
-                    xMove -= textWidth;
-                    break;
-                case TextAlignment.Left:
-                    break;
-            }
-
-            // Don't draw anything if it is not on the screen.
-            if (xMove + textWidth < 0 || xMove > _displayWidth) { return; }
-            if (yMove + textHeight < 0 || yMove > _displayWidth) { return; } 
-            //TODO: BUG HERE ??? WHy not yMove > _displayHeight ???
-
-            for (int j = 0; j < textLength; j++)
-            {
-                int xPos = xMove + cursorX;
-                int yPos = yMove + cursorY;
-
-                byte code = text[j];
-                if (code >= firstChar)
-                {
-                    byte charCode = (byte)(code - firstChar);
-
-                    // 4 Bytes per char code
-                    byte msbJumpToChar = _currentFontData[JUMPTABLE_START + charCode * JUMPTABLE_BYTES]; // pgm_read_byte(fontData + JUMPTABLE_START + charCode * JUMPTABLE_BYTES);                  // MSB  \ JumpAddress
-                    byte lsbJumpToChar = _currentFontData[JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_LSB]; // pgm_read_byte(fontData + JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_LSB);   // LSB /
-                    byte charByteSize = _currentFontData[JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_SIZE]; // pgm_read_byte(fontData + JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_SIZE);  // Size
-                    byte currentCharWidth = _currentFontData[JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_WIDTH]; // pgm_read_byte(fontData + JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_WIDTH); // Width
-
-                    // Test if the char is drawable
-                    if (!(msbJumpToChar == 255 && lsbJumpToChar == 255))
-                    {
-                        // Get the position of the char data
-                        int charDataPosition = JUMPTABLE_START + sizeOfJumpTable + ((msbJumpToChar << 8) + lsbJumpToChar);
-                        //drawInternal_LEGACY(xPos, yPos, currentCharWidth, textHeight, _currentFontData, charDataPosition, charByteSize);
-                    }
-
-                    cursorX += currentCharWidth;
-                }
-            }
-
-        }
-
-        public void DrawString_LEGACY(int xMove, int yMove, String strUser)
-        {
-            int lineHeight = _currentFontData[HEIGHT_POS]; //pgm_read_byte(fontData + HEIGHT_POS);
-
-            //HERE
-            var text = utf8ascii(strUser);
-
-            int yOffset = 0;
-
-            // If the string should be centered vertically too
-            // we need to now how heigh the string is.
-            if (CurrentTextAlignement == TextAlignment.CenterBoth)
-            {
-                int lb = 0;
-                // Find number of linebreaks in text
-                for (int i = 0; text[i] != 0; i++)
-                {
-                    if(text[i] == 10)
-                         lb++;
-                }
-                // Calculate center
-                yOffset = (lb * lineHeight) / 2;
-            }
-
-            int line = 0;
-            //char* textPart = strtok(text, "\n");
-            var textPart = text; 
-
-            // TODO : handle multi line text ?
-
-            //while (textPart != NULL)
-            //{
-            //    uint16_t length = strlen(textPart);
-            //    drawStringInternal_LEGACY(xMove, yMove - yOffset + (line++) * lineHeight, textPart, length, getStringWidth(textPart, length));
-            //    textPart = strtok(NULL, "\n");
-            //}
-            //free(text);
-
-        }
-
-
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="bytesInData"></param>
         private void DrawFontChar(int xMove, int yMove, int width, int height, byte[] data, int offset, int bytesInData) 
         {
             if (width< 0 || height< 0) return;
@@ -270,13 +143,20 @@ namespace nanoframework.OledDisplay1306
         }
 
 
-
-        public void DrawChar(int x, int y, char c)
+        /// <summary>
+        /// Draw a char on a specificposition. 
+        /// The function return the width of the char in pixel 
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position </param>
+        /// <param name="c">Char to draw</param>
+        /// <returns>Width of the drawn char.</returns>
+        public int DrawChar(int x, int y, char c)
         {
             if (_currentFontData==null)
             {
                 Debug.WriteLine("ERROR: No current font selected !");
-                return;
+                return 0; // nothing drawn
             }
             int textHeight = _currentFontData[HEIGHT_POS];//pgm_read_byte(fontData + HEIGHT_POS);
             byte firstChar = _currentFontData[FIRST_CHAR_POS];// pgm_read_byte(fontData + FIRST_CHAR_POS);
@@ -305,64 +185,39 @@ namespace nanoframework.OledDisplay1306
 
                     //drawInternal_LEGACY(xPos, yPos, currentCharWidth, textHeight, _currentFontData, charDataPosition, charByteSize);
                 }
-
+                return currentCharWidth;
             }
+            return 0; // nothin drawn
         }
 
 
 
-
-        public void DrawString_NF(int xMove, int yMove, string strUser)
+        /// <summary>
+        /// Draw a string on a specific position. 
+        /// Multiline not supported.  ONLY LEFT ALIGNMENT SUPPORTED
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
+        /// <param name="txt">test to print</param>
+        public void DrawString(int x, int y, string txt)
         {
-            int lineHeight = _currentFontData[HEIGHT_POS]; //pgm_read_byte(fontData + HEIGHT_POS);
-
-            var lines = strUser.Split('\n');
-            
-
-            //HERE
-            var text = utf8ascii(strUser);
-
-            int yOffset = 0;
-
-            // If the string should be centered vertically too
-            // we need to now how heigh the string is.
-            if (CurrentTextAlignement == TextAlignment.CenterBoth)
+            int wChar = 0;
+            //foreach (var c in txt)
+            char c;
+            for(int i=0;i<txt.Length;i++)
             {
-                int lb = 0;
-                // Find number of linebreaks in text
-                for (int i = 0; text[i] != 0; i++)
-                {
-                    if (text[i] == 10)
-                        lb++;
-                }
-                // Calculate center
-                yOffset = (lb * lineHeight) / 2;
+                c = txt[i];
+                wChar = DrawChar(x, y, c);
+                x += wChar;
             }
-
-            int line = 0;
-            //char* textPart = strtok(text, "\n");
-            var textPart = text;
-
-            // TODO : handle multi line text ?
-
-            //while (textPart != NULL)
-            //{
-            //    uint16_t length = strlen(textPart);
-            //    drawStringInternal_LEGACY(xMove, yMove - yOffset + (line++) * lineHeight, textPart, length, getStringWidth(textPart, length));
-            //    textPart = strtok(NULL, "\n");
-            //}
-            //free(text);
-
         }
-
-
 
         public void DrawStringMaxWidth(UInt16 x, UInt16 y, UInt16 maxLineWidth, string text)
         {
             throw new NotImplementedException();
         }
 
-        public UInt16 GetStringWidth(string text,UInt16 length)
+        public UInt16 GetStringWidth(string text, UInt16 length)
         {
             throw new NotImplementedException();
         }

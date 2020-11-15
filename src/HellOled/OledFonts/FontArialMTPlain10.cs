@@ -11,9 +11,7 @@ namespace OledFonts
             if (arialMTPlain10 != null)
                 return arialMTPlain10;
 
-            arialMTPlain10 = new Font()
-            {
-                LegacyFont = new byte[] {
+            arialMTPlain10 = new Font(new byte[] {
               0x0A, // Width: 10
               0x0D, // Height: 13
               0x20, // First Char: 32
@@ -436,7 +434,7 @@ namespace OledFonts
               0x00,0x00,0xF8,0x0F,0x20,0x02,0x20,0x02,0xC0,0x01,  // 254
               0x20,0x00,0xC8,0x09,0x00,0x06,0xC8,0x01,0x20  // 255
             }
-            };
+            );
 
             return arialMTPlain10;
         }
