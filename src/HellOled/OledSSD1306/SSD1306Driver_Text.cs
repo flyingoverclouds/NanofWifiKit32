@@ -1,8 +1,7 @@
-﻿using OledFonts;
-using System;
+﻿using System;
 using System.Diagnostics;
 
-namespace nanoframework.OledDisplay1306
+namespace sablefin.nf.OledDisplay1306
 {
 
     public partial class SSD1306Driver

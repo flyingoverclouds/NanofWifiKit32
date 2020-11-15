@@ -5,8 +5,9 @@ using System.Device.Gpio;
 using nanoFramework.Hardware.Esp32;
 using System.Device.I2c;
 using HeltecLib;
-using nanoframework.OledDisplay1306;
-using OledFonts;
+using sablefin.nf.OledDisplay1306;
+using sablefin.nf.OledFonts;
+using sablefin.nf.WifiKit32Common;
 
 namespace HellOled
 {
@@ -45,7 +46,7 @@ namespace HellOled
         static void DemoScreen3(SSD1306Driver oledScreen)
         {
             oledScreen.Clear();
-            oledScreen.CurrentFont = OledFonts.FontArialMTPlain10.GetFont();
+            oledScreen.CurrentFont = FontArialMTPlain10.GetFont();
             int w = 0;
             int x = 1;
             w = oledScreen.DrawChar(x += w, 1, 'N');
@@ -53,7 +54,7 @@ namespace HellOled
             w = oledScreen.DrawChar(x += w, 1, 'C');
             w = oledScreen.DrawChar(x += w, 1, 'o');
 
-            oledScreen.CurrentFont = OledFonts.FontArialMTPlain16.GetFont();
+            oledScreen.CurrentFont = FontArialMTPlain16.GetFont();
             w = 0;
             x = 1;
             w = oledScreen.DrawChar(x += w, 11, 'n');
@@ -61,7 +62,7 @@ namespace HellOled
             w = oledScreen.DrawChar(x += w, 11, 'c');
             w = oledScreen.DrawChar(x += w, 11, '0');
 
-            oledScreen.CurrentFont = OledFonts.FontArialMTPlain24.GetFont();
+            oledScreen.CurrentFont = FontArialMTPlain24.GetFont();
             w = 0;
             x = 1;
             w = oledScreen.DrawChar(x += w, 30, 'N');
@@ -89,13 +90,13 @@ namespace HellOled
             // BLINK LED TO WAIT
             int counter = 0;
             GpioController gpioc = new GpioController();
-            GpioPin led = gpioc.OpenPin(WifiKit32Common.OnBoardDevicePortNumber.Led, PinMode.Output);
+            GpioPin led = gpioc.OpenPin(OnBoardDevicePortNumber.Led, PinMode.Output);
             led.Write(PinValue.Low);
 
             wifiLogo = XBMSamples.GetWifiLogoXBM();
             nanofLogo = XBMSamples.GetNanoFrameworkXBM();
 
-            heltec.Display.CurrentFont = OledFonts.FontArialMTPlain10.GetFont();
+            heltec.Display.CurrentFont = FontArialMTPlain10.GetFont();
 
             while (true)
             {

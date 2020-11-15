@@ -3,7 +3,8 @@ using System;
 using System.Device.Gpio;
 using System.Threading;
 using System.Device.I2c;
-using nanoframework.OledDisplay1306;
+using sablefin.nf.OledDisplay1306;
+using sablefin.nf.WifiKit32Common;
 
 namespace HeltecLib
 {
@@ -23,8 +24,8 @@ namespace HeltecLib
         {
             GpioController gpioc = new GpioController();
             // POWER-ON ONBOARD SCREEN
-            oledVext = gpioc.OpenPin(WifiKit32Common.OnBoardDevicePortNumber.OledVExt, PinMode.Output);
-            oledReset = gpioc.OpenPin(WifiKit32Common.OnBoardOled.Reset, PinMode.Output);
+            oledVext = gpioc.OpenPin(OnBoardDevicePortNumber.OledVExt, PinMode.Output);
+            oledReset = gpioc.OpenPin(OnBoardOled.Reset, PinMode.Output);
         }
 
 
@@ -34,13 +35,13 @@ namespace HeltecLib
             this.Reset();
 
             // Configuration of I2C1 bus for onboard LED
-            Configuration.SetPinFunction(WifiKit32Common.OnBoardOled.Data, DeviceFunction.I2C1_DATA);
-            Configuration.SetPinFunction(WifiKit32Common.OnBoardOled.Clock, DeviceFunction.I2C1_CLOCK);
+            Configuration.SetPinFunction(OnBoardOled.Data, DeviceFunction.I2C1_DATA);
+            Configuration.SetPinFunction(OnBoardOled.Clock, DeviceFunction.I2C1_CLOCK);
 
             // OBSOLETE INIT
             //i2cBusSSD1306 = I2cDevice.FromId("I2C1", new I2cConnectionSettings(WifiKit32Common.OnBoardOled.I2CAddress) { BusSpeed = I2cBusSpeed.FastMode, SharingMode = I2cSharingMode.Exclusive }); // use the 400khz, but HeltecOled should support higher speed up to  700khz
 
-            i2cBusSSD1306 = I2cDevice.Create(new I2cConnectionSettings(1, WifiKit32Common.OnBoardOled.I2CAddress, I2cBusSpeed.FastMode));
+            i2cBusSSD1306 = I2cDevice.Create(new I2cConnectionSettings(1, OnBoardOled.I2CAddress, I2cBusSpeed.FastMode));
 
 
             ssd1306 = new SSD1306Driver(i2cBusSSD1306,oledReset,50 /* Heltec onboard oled support 0ms */);

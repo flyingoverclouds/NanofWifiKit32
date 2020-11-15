@@ -1,4 +1,5 @@
-﻿using System;
+﻿using sablefin.nf.OledDisplay1306;
+using System;
 
 namespace HellOled
 {

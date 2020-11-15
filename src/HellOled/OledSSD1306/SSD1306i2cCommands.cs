@@ -1,7 +1,10 @@
 ﻿using System;
 
-namespace nanoframework.OledDisplay1306
+namespace sablefin.nf.OledDisplay1306
 {
+    /// <summary>
+    /// I2C command value for SSD1306 oled screen driver
+    /// </summary>
     class Commands
     {
         public const byte ChargePump = 0x8D;

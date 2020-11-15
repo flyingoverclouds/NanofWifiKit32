@@ -12,7 +12,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>OledSSD1306</RootNamespace>
+    <RootNamespace>sablefin.nf.OledSSD1306</RootNamespace>
     <AssemblyName>OledSSD1306</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>

@@ -5,8 +5,6 @@
  * 
  * (c) Nicolas Clerc - Novembre 2020
  * 
- * ------- VERSION
- * v202011 : simple buffering version. Only tested on Wifikit32 v2.
  * 
  *-------- LICENSE
  * The MIT License (MIT)
@@ -31,14 +29,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
-*/
+ *
+ */
+
+
 using System;
 using System.Device.Gpio;
 using System.Threading;
 using System.Device.I2c;
 
-namespace nanoframework.OledDisplay1306
+namespace sablefin.nf.OledDisplay1306
 {
+    /// <summary>
+    /// Constant for supperted 'color' on Oled screen
+    /// </summary>
     public enum OledColor
     {
         Black = 0,
@@ -72,14 +76,6 @@ namespace nanoframework.OledDisplay1306
         CenterBoth = 3
     };
 
-
-
-    //enum OLEDDISPLAY_GEOMETRY
-    //{
-    //    GEOMETRY_128_64 = 0,
-    //    GEOMETRY_128_32 = 1,
-    //    GEOMETRY_64_32 = 2 //Wireless Stick
-    //};
 
     public partial class SSD1306Driver : IDisposable
     {

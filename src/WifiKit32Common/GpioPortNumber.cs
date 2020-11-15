@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WifiKit32Common
+namespace sablefin.nf.WifiKit32Common
 {
 
     /// <summary>

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using sablefin.nf.OledDisplay1306;
+using System;
 
-namespace OledFonts
+namespace sablefin.nf.OledFonts
 {
     public class FontArialMTPlain16
     {

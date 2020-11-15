@@ -1,16 +1,14 @@
-﻿using HellOled;
-using System;
+﻿using System;
 
-namespace nanoframework.OledDisplay1306
+namespace sablefin.nf.OledDisplay1306
 {
     public partial class SSD1306Driver
     {
-
         /// <summary>
-        /// set a pixel to the currentcolor.
+        /// Set a pixel to the CurrentColor.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
         public void SetPixel(int x, int y)
         {
             if (x>=0 && x<_displayWidth && y>=0 && y< _displayHeight)
@@ -31,12 +29,24 @@ namespace nanoframework.OledDisplay1306
         }
 
 
+        /// <summary>
+        /// Local implementation of abs()
+        /// (avoinding embedding heavy lib just for this function).
+        /// </summary>
+        /// <param name="v">int number to abs()</param>
+        /// <returns></returns>
         private int abs(int v)
         {
             // localimplementation of Abs() to avoid including a full Math package
             return (v < 0) ? -v : v;
         }
 
+        /// <summary>
+        /// Swap value of 2 variables
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="a">first variable</param>
+        /// <param name="b">second variable</param>
         private void swap<T>(ref T a, ref T b)
         {
             T c = a;
