@@ -12,7 +12,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>sablefin.nf.OledFonts.WifiKit32Common</RootNamespace>
+    <RootNamespace>sablefin.nf.OledFonts.WifiKit32</RootNamespace>
     <AssemblyName>WifiKit32Common</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>

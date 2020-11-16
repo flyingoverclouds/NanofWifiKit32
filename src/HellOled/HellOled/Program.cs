@@ -2,12 +2,12 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 using System.Device.Gpio;
-using nanoFramework.Hardware.Esp32;
-using System.Device.I2c;
 using HeltecLib;
 using sablefin.nf.OledDisplay1306;
 using sablefin.nf.OledFonts;
-using sablefin.nf.WifiKit32Common;
+
+using sablefin.nf.WifiKit32Common; // comment/uncomment this using when targeting Heltec WifiKit32 v2
+//using sablefin.nf.WifiLora32; // comment/uncomment this using when targeting Heltec WifiLORA32 v2
 
 namespace HellOled
 {
@@ -15,6 +15,7 @@ namespace HellOled
     {
         static XbmImage wifiLogo = null;
         static XbmImage nanofLogo = null;
+
 
         static void DemoGeometry(SSD1306Driver oledScreen)
         {
@@ -74,6 +75,7 @@ namespace HellOled
         }
         public static void Main()
         {
+            
             Debug.WriteLine("[HellOled] : a hello word with the embedded OLED screen.");
 
             // Heltec oled TEST
