@@ -46,7 +46,7 @@ namespace sablefin.nf.WifiLora32
         public const int Gpio4 = 4;  // wired to OLED_SDA
 
         /// <summary>
-        /// LoRa SCK (Clock)
+        /// LoRa SCK (SPI Clock)
         /// UNAVAILBLE capabilities : V_SPI_CS0
         /// </summary>
         public const int Gpio5 = 5;
@@ -89,13 +89,13 @@ namespace sablefin.nf.WifiLora32
         public const int Gpio17 = 17;
 
         /// <summary>
-        /// LoRa_CS (Select)
+        /// LoRa_CS (SPI Select)
         /// UNAVAILABLE capabilities : V_SPI_CLK
         /// </summary>
         public const int Gpio18 = 18;
 
         /// <summary>
-        /// LoRa_MISO 
+        /// LoRa_MISO  (SPI MISO)
         /// UNAVAILABLE capabilities : MISO, V_SPI_Q, U0_CTS
         /// </summary>
         public const int Gpio19 = 19;
@@ -127,25 +127,25 @@ namespace sablefin.nf.WifiLora32
         public const int Gpio25 = 25;
 
         /// <summary>
-        /// Hardwired pin to LoRa_DIO0
+        /// Hardwired pin to LoRa_DIO0 (Interrupt 0)
         /// UNAVAILBLE capabilities : DAC1, ADC2_9
         /// </summary>
         public const int Gpio26 = 26;
 
         /// <summary>
-        /// Hardwired pin to LoRa_MOSI
+        /// Hardwired pin to LoRa_MOSI (SPI MOSI)
         /// UNAVAILABLE capabilities : Touch7, ADC2_7
         /// </summary>
         public const int Gpio27 = 27;
 
         /// <summary>
-        /// Hardwired pin to LoRa_DIO0
+        /// Hardwired pin to LoRa_DIO2 (Interrupt 2)
         /// UNAVAILABLE capabilities : Touch9, ADC1_4, XTAL32
         /// </summary>
         public const int Gpio32 = 32;
 
         /// <summary>
-        /// Hardwired pin to LoRa_DIO1
+        /// Hardwired pin to LoRa_DIO1 (Interrupt 1)
         /// UNAVAILABLE capabilities : Touch8, ADC1_5, XTAL32
         /// </summary>
         public const int Gpio33 = 33;
