@@ -2,7 +2,8 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 using System.Device.Gpio;
-using HeltecLib;
+using HeltecHelper;
+
 using sablefin.nf.OledDisplay1306;
 using sablefin.nf.OledFonts;
 
@@ -47,32 +48,32 @@ namespace HellOled
         static void DemoScreen3(SSD1306Driver oledScreen)
         {
             oledScreen.Clear();
+            oledScreen.CurrentTextAlignement = TextAlignment.Left;
+
             oledScreen.CurrentFont = FontArialMTPlain10.GetFont();
-            int w = 0;
-            int x = 1;
-            w = oledScreen.DrawChar(x += w, 1, 'N');
-            w = oledScreen.DrawChar(x += w, 1, 'i');
-            w = oledScreen.DrawChar(x += w, 1, 'C');
-            w = oledScreen.DrawChar(x += w, 1, 'o');
+            oledScreen.DrawString(1, 0, "NiCo");
 
             oledScreen.CurrentFont = FontArialMTPlain16.GetFont();
-            w = 0;
-            x = 1;
-            w = oledScreen.DrawChar(x += w, 11, 'n');
-            w = oledScreen.DrawChar(x += w, 11, 'I');
-            w = oledScreen.DrawChar(x += w, 11, 'c');
-            w = oledScreen.DrawChar(x += w, 11, '0');
+            oledScreen.DrawString(1, 11, "nIc0");
 
             oledScreen.CurrentFont = FontArialMTPlain24.GetFont();
-            w = 0;
-            x = 1;
-            w = oledScreen.DrawChar(x += w, 30, 'N');
-            w = oledScreen.DrawChar(x += w, 30, '1');
-            w = oledScreen.DrawChar(x += w, 30, 'c');
-            w = oledScreen.DrawChar(x += w, 30, 'o');
-
-
+            oledScreen.DrawString(1, 30, "N1co");
         }
+
+        static void DemoScreen4(SSD1306Driver oledScreen)
+        {
+            oledScreen.Clear();
+            oledScreen.CurrentFont = FontArialMTPlain10.GetFont();
+            oledScreen.DrawHorizontalLine(0, 32, 128);
+            oledScreen.DrawVerticalLine(64, 0, 64);
+            oledScreen.CurrentTextAlignement = TextAlignment.Left;
+            oledScreen.DrawString(0,0,"DrawString()\rLine 1\nLine 2\r\nLine 3");
+            oledScreen.CurrentTextAlignement = TextAlignment.Right;
+            oledScreen.DrawString(128, 0, "DrawString()\rLine 1\nLine 2\r\nLine 3");
+            oledScreen.CurrentTextAlignement = TextAlignment.Center;
+            oledScreen.DrawString(64, 8, "< >\r-< >-\roO0[]0Oo\r");
+        }
+
         public static void Main()
         {
             
@@ -109,18 +110,6 @@ namespace HellOled
                         //heltec.Display.TestFill(4);
                         heltec.Display.TestFill(0);
                         break;
-                    //case 1:
-                    //    heltec.Display.Clear();
-                    //    heltec.Display.TestFill(1);
-                    //    break;
-                    //case 2:
-                    //    heltec.Display.Clear();
-                    //    heltec.Display.TestFill(2);
-                    //    break;
-                    //case 3:
-                    //    heltec.Display.Clear();
-                    //    heltec.Display.TestFill(3);
-                    //    break;
                     case 1:
                         heltec.Display.Clear();
                         DemoGeometry(heltec.Display);
@@ -130,8 +119,10 @@ namespace HellOled
                         DemoScreen2(heltec.Display);
                         break;
                     case 3:
-                        heltec.Display.Clear();
                         DemoScreen3(heltec.Display);
+                        break;
+                    case 4:
+                        DemoScreen4(heltec.Display);
                         break;
                     default:
                         counter = -1; // there is the ++ at the end of loop

@@ -6,7 +6,7 @@ using System.Device.I2c;
 using sablefin.nf.OledDisplay1306;
 using sablefin.nf.WifiKit32Common;
 
-namespace HeltecLib
+namespace HeltecHelper
 {
     class HeltecOled 
     {
@@ -38,8 +38,6 @@ namespace HeltecLib
             Configuration.SetPinFunction(OnBoardOled.Data, DeviceFunction.I2C1_DATA);
             Configuration.SetPinFunction(OnBoardOled.Clock, DeviceFunction.I2C1_CLOCK);
 
-            // OBSOLETE INIT
-            //i2cBusSSD1306 = I2cDevice.FromId("I2C1", new I2cConnectionSettings(WifiKit32Common.OnBoardOled.I2CAddress) { BusSpeed = I2cBusSpeed.FastMode, SharingMode = I2cSharingMode.Exclusive }); // use the 400khz, but HeltecOled should support higher speed up to  700khz
 
             i2cBusSSD1306 = I2cDevice.Create(new I2cConnectionSettings(1, OnBoardOled.I2CAddress, I2cBusSpeed.FastMode));
 

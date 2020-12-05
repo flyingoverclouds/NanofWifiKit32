@@ -19,6 +19,13 @@ namespace sablefin.nf.OledDisplay1306
         Font _currentFont = null;
         byte[] _currentFontData = null;
 
+        TextAlignment _currentTextAlignement;
+        public TextAlignment CurrentTextAlignement { 
+            get=>_currentTextAlignement; 
+            set { _currentTextAlignement = value; } 
+        }
+
+
         /// <summary>
         /// get/set the current font data
         /// </summary>
@@ -32,9 +39,15 @@ namespace sablefin.nf.OledDisplay1306
         }
 
 
-
-        byte UnicodeToAscii(char ch) // TODO : replace with a extension method on Char type !
+        /// <summary>
+        /// quick & dirty unicode to ascii converter.
+        /// support the € symbol. 
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <returns></returns>
+        byte UnicodeToAscii(char ch) 
         {
+            // TODO: replace by an char extension method ? 
             if (ch < 127)
                 return (byte)ch;
             if ((((ushort)ch) & 0xFF00) == 0xC2)
@@ -44,6 +57,11 @@ namespace sablefin.nf.OledDisplay1306
             return 32; // all other char ignored and replaced by a char
         }
 
+        /// <summary>
+        /// transcode an UTF8 encoded string to an array of byte (ascii encoding)
+        /// </summary>
+        /// <param name="str">string to ascii-ize</param>
+        /// <returns>byte array of ascii encoded character</returns>
         byte[] utf8ascii(string str)
         {
             var l = str.Length;
@@ -56,15 +74,15 @@ namespace sablefin.nf.OledDisplay1306
 
 
         /// <summary>
-        /// Draw a char from the font data on a specified position
+        /// Draw one char from the font data on a specified position
         /// </summary>
-        /// <param name="xMove"></param>
-        /// <param name="yMove"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="data"></param>
-        /// <param name="offset"></param>
-        /// <param name="bytesInData"></param>
+        /// <param name="xMove">top left X of origin</param>
+        /// <param name="yMove">top left Y of origin</param>
+        /// <param name="width">width of char</param>
+        /// <param name="height">height of char</param>
+        /// <param name="data">font data to display</param>
+        /// <param name="offset">offset of char to print</param>
+        /// <param name="bytesInData">size of data char to display</param>
         private void DrawFontChar(int xMove, int yMove, int width, int height, byte[] data, int offset, int bytesInData) 
         {
             if (width< 0 || height< 0) return;
@@ -98,7 +116,6 @@ namespace sablefin.nf.OledDisplay1306
 
                 if (dataPos >=  0  && dataPos<_displayBufferSize && xPos    >=  0  && xPos< _displayWidth ) 
                 {
-
                     if (yOffset >= 0) 
                     {
                         switch (_currentColor) 
@@ -107,7 +124,6 @@ namespace sablefin.nf.OledDisplay1306
                             case OledColor.Black : displayBuffer[dataPos] &= (byte)(~(currentByte << yOffset)); break;
                             case OledColor.Inverse: displayBuffer[dataPos] ^= (byte)(currentByte << yOffset); break;
                         }
-
                         if (dataPos < (_displayBufferSize - _displayWidth)) 
                         {
                             switch (_currentColor)
@@ -122,7 +138,6 @@ namespace sablefin.nf.OledDisplay1306
                     {
                         // Make new offset position
                         yOffset = -yOffset;
-
                         switch (_currentColor) 
                         {
                             case OledColor.White: displayBuffer[dataPos] |= (byte)(currentByte >> yOffset); break;
@@ -161,7 +176,6 @@ namespace sablefin.nf.OledDisplay1306
             byte firstChar = _currentFontData[FIRST_CHAR_POS];// pgm_read_byte(fontData + FIRST_CHAR_POS);
             int sizeOfJumpTable = _currentFontData[CHAR_NUM_POS] * JUMPTABLE_BYTES; //pgm_read_byte(fontData + CHAR_NUM_POS) * JUMPTABLE_BYTES;
 
-
             byte ascii = UnicodeToAscii(c);
 
             if (ascii >= firstChar)
@@ -179,11 +193,32 @@ namespace sablefin.nf.OledDisplay1306
                 {
                     // Get the position of the char data
                     int charDataPosition = JUMPTABLE_START + sizeOfJumpTable + ((msbJumpToChar << 8) + lsbJumpToChar);
-
                     DrawFontChar(x, y, currentCharWidth, textHeight, _currentFontData, charDataPosition, charByteSize);
+               }
+                return currentCharWidth;
+            }
+            return 0; // nothing to draw
+        }
 
-                    //drawInternal_LEGACY(xPos, yPos, currentCharWidth, textHeight, _currentFontData, charDataPosition, charByteSize);
-                }
+        /// <summary>
+        /// Return the width (in pixel) of a char in the current font.
+        /// </summary>
+        /// <param name="c">char</param>
+        /// <returns>width in pixel</returns>
+        private int GetCharWidth(char c)
+        {
+            if (_currentFontData == null)
+            {
+                Debug.WriteLine("ERROR: No current font selected !");
+                return 0; // nothing drawn
+            }
+            byte firstChar = _currentFontData[FIRST_CHAR_POS];// pgm_read_byte(fontData + FIRST_CHAR_POS);
+            byte ascii = UnicodeToAscii(c);
+            if (ascii >= firstChar)
+            {
+                byte charCode = (byte)(ascii - firstChar);
+                // 4 Bytes per char code
+                byte currentCharWidth = _currentFontData[JUMPTABLE_START + charCode * JUMPTABLE_BYTES + JUMPTABLE_WIDTH]; 
                 return currentCharWidth;
             }
             return 0; // nothin drawn
@@ -193,37 +228,119 @@ namespace sablefin.nf.OledDisplay1306
 
         /// <summary>
         /// Draw a string on a specific position. 
-        /// Multiline not supported.  ONLY LEFT ALIGNMENT SUPPORTED
+        /// ONLY LEFT ALIGNMENT SUPPORTED
         /// </summary>
         /// <param name="x">X position</param>
         /// <param name="y">Y position</param>
         /// <param name="txt">test to print</param>
         public void DrawString(int x, int y, string txt)
         {
+            if (this.CurrentTextAlignement == TextAlignment.Left)
+            {
+                DrawString_LeftAlignment(x, y, txt);
+                return;
+            }
+
+            int origX = x;
+            int txtLength = txt.Length; // cached value to avoid multiple call the the property
+            int start = 0, end = 0; // cursor to browse the string 
+            int width = 0; // width of line to display
+            int offset = 0; // offset to respect requested alignment
+            char c;
+            while (start<txtLength-1)
+            {
+                // extracting end of current line from the current start position && update width on each iteration
+                while( end<txtLength && !(txt[end]=='\n' || txt[end]=='\r'))
+                {
+                    width += GetCharWidth(txt[end]);
+                    end++;
+                }
+
+                // Compute left offset for current line
+                if (this.CurrentTextAlignement==TextAlignment.Center)
+                {
+                    offset = width / 2;
+                }
+                else if (this.CurrentTextAlignement==TextAlignment.Right)
+                {
+                    offset = width;
+                }
+
+                // Draw the current ligne
+                for (int i = start; i < end; i++)
+                {
+                    c = txt[i];
+                    x+= DrawChar(x-offset, y, c);
+                }
+
+                end++; // to go after the current new line
+                width = 0;
+                start = end;
+                x = origX;
+                y += this.CurrentFont.LegacyFont[HEIGHT_POS];
+            }
+
+
+        }
+
+        /// <summary>
+        /// This is a private optimized version of DrawString() for left Alignment.
+        /// </summary>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        /// <param name="txt">text to print</param>
+        private void DrawString_LeftAlignment(int x, int y, string txt)
+        {
+            int origX = x;
             int wChar = 0;
-            //foreach (var c in txt)
+
+            //foreach (var c in txt) // HACK: generate a compiler error due to the lake of IEnumerable implementation on String class.
             char c;
             for(int i=0;i<txt.Length;i++)
             {
                 c = txt[i];
+                if (c == '\n' || c == '\r')
+                {
+                    x = origX;
+                    y += this.CurrentFont.LegacyFont[HEIGHT_POS];
+                    continue;
+                }
                 wChar = DrawChar(x, y, c);
                 x += wChar;
             }
         }
 
+        /// <summary>
+        /// NOT IMPLEMENTED
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="maxLineWidth"></param>
+        /// <param name="text"></param>
         public void DrawStringMaxWidth(UInt16 x, UInt16 y, UInt16 maxLineWidth, string text)
         {
             throw new NotImplementedException();
         }
 
-        public UInt16 GetStringWidth(string text, UInt16 length)
+        public int GetStringWidth(string txt, int length)
         {
-            throw new NotImplementedException();
+            int wChar = 0;
+            int size = 0;
+            char c;
+            for (int i = 0; i < txt.Length; i++)
+            {
+                if (i >= length)
+                    break;
+                c = txt[i];
+                size += GetCharWidth(c);
+            }
+
+            return size;
         }
 
-        public UInt16 GetStringWidth(string text)
+        public int GetStringWidth(string txt)
         {
-            throw new NotImplementedException();
+            return GetStringWidth(txt, txt.Length);
         }
 
     }

@@ -71,9 +71,9 @@ namespace sablefin.nf.OledDisplay1306
         Center = 2,
 
         /// <summary>
-        /// Text vertically AND horizontally CENTERED
+        /// Text vertically AND horizontally CENTERED - NOT SUPPORTED
         /// </summary>
-        CenterBoth = 3
+        //CenterBoth = 3
     };
 
 
