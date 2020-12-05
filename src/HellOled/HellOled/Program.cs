@@ -71,26 +71,20 @@ namespace HellOled
             oledScreen.CurrentTextAlignement = TextAlignment.Right;
             oledScreen.DrawString(128, 0, "DrawString()\rLine 1\nLine 2\r\nLine 3");
             oledScreen.CurrentTextAlignement = TextAlignment.Center;
-            oledScreen.DrawString(64, 8, "< >\r-< >-\roO0[]0Oo\r");
+            oledScreen.DrawString(64, 0, "< >\r-< >-\roO0[]0Oo\r/ \\\r\\_ _/");
         }
 
         public static void Main()
         {
-            
-            Debug.WriteLine("[HellOled] : a hello word with the embedded OLED screen.");
+            Debug.WriteLine("[HellOled] : a advanced hello word with the embedded OLED screen.");
 
-            // Heltec oled TEST
             var heltec = new HeltecOled();
             heltec.Begin();
-            //heltec.Display.SetContrast(20);
             heltec.Display.SetBrightness(180);
-
-            //heltec.Display.InvertDisplay();
             heltec.Display.FlipScreenVertically();
             heltec.Display.CurrentColor = OledColor.White;
 
 
-            // BLINK LED TO WAIT
             int counter = 0;
             GpioController gpioc = new GpioController();
             GpioPin led = gpioc.OpenPin(OnBoardDevicePortNumber.Led, PinMode.Output);
@@ -107,7 +101,6 @@ namespace HellOled
                 {
                     case 0:
                         heltec.Display.Clear();
-                        //heltec.Display.TestFill(4);
                         heltec.Display.TestFill(0);
                         break;
                     case 1:
@@ -130,9 +123,7 @@ namespace HellOled
                 }
 
                 heltec.Display.RefreshDisplay();
-
                 led.Toggle();
-
                 Thread.Sleep(1000);
                 counter++;
             }
