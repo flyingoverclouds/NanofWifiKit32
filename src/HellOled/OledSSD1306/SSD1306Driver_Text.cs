@@ -324,7 +324,6 @@ namespace sablefin.nf.OledDisplay1306
 
         public int GetStringWidth(string txt, int length)
         {
-            int wChar = 0;
             int size = 0;
             char c;
             for (int i = 0; i < txt.Length; i++)
