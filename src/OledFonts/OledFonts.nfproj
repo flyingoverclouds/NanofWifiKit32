@@ -8,32 +8,34 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{11A8DD76-328B-46DF-9F39-F559912D0360};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>8df88fc3-d767-4104-89ad-509a6f16cba1</ProjectGuid>
+    <ProjectGuid>8b1259b4-a906-4516-ae01-c5de3b5b9197</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>sablefin.nf.WifiLora32</RootNamespace>
-    <AssemblyName>sablefin.nf.WifiLora32</AssemblyName>
+    <RootNamespace>sablefin.nf.OledFonts</RootNamespace>
+    <AssemblyName>OledFonts</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <Name>sablefin.nf.WifiLora32</Name>
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="GpioPortNumber.cs" />
-    <Compile Include="LoRaSettings.cs" />
-    <Compile Include="OledSettings.cs" />
+    <Compile Include="FontArialMTPlain10.cs" />
+    <Compile Include="FontArialMTPlain16.cs" />
+    <Compile Include="FontArialMTPlain24.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib, Version=1.9.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.9.1-preview.6\lib\mscorlib.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE.txt" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OledSSD1306\OledSSD1306.nfproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=1.9.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\HellOled\packages\nanoFramework.CoreLibrary.1.9.1-preview.6\lib\mscorlib.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

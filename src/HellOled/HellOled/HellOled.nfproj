@@ -54,10 +54,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\OledFonts\OledFonts.nfproj" />
+    <ProjectReference Include="..\..\OledSSD1306\OledSSD1306.nfproj" />
     <ProjectReference Include="..\..\WifiKit32Common\WifiKit32.nfproj" />
-    <ProjectReference Include="..\OledFonts\OledFonts.nfproj" />
-    <ProjectReference Include="..\OledSSD1306\OledSSD1306.nfproj" />
-    <ProjectReference Include="..\WifiLora32\WifiLora32.nfproj" />
+    <ProjectReference Include="..\..\WifiLora32\WifiLora32.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>
