@@ -45,7 +45,7 @@ namespace sablefin.nf.OledDisplay1306
         /// </summary>
         /// <param name="ch"></param>
         /// <returns></returns>
-        byte UnicodeToAscii(char ch) 
+        static byte UnicodeToAscii(char ch) 
         {
             // TODO: replace by an char extension method ? 
             if (ch < 127)
@@ -62,7 +62,7 @@ namespace sablefin.nf.OledDisplay1306
         /// </summary>
         /// <param name="str">string to ascii-ize</param>
         /// <returns>byte array of ascii encoded character</returns>
-        byte[] utf8ascii(string str)
+        public static byte[] Utf8StringToAsciiString(string str)
         {
             var l = str.Length;
             var s = new byte[l];
