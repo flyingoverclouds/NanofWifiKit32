@@ -35,8 +35,8 @@ using HeltecHelper;
 using sablefin.nf.OledDisplay1306;
 using sablefin.nf.OledFonts;
 
-using sablefin.nf.WifiKit32Common; // comment/uncomment this using when targeting Heltec WifiKit32 v2
-//using sablefin.nf.WifiLora32; // comment/uncomment this using when targeting Heltec WifiLORA32 v2
+//using sablefin.nf.WifiKit32Common; // comment/uncomment this using when targeting Heltec WifiKit32 v2
+using sablefin.nf.WifiLora32; // comment/uncomment this using when targeting Heltec WifiLORA32 v2
 
 namespace HellOled
 {
