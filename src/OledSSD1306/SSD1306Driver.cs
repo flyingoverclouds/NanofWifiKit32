@@ -103,12 +103,12 @@ namespace sablefin.nf.OledDisplay1306
         /// I2C commands value used by the SSD1306 libraray
         /// </summary>
       
-        byte[] displayBuffer =null;
+        byte[] displayBuffer = null;
 
         private I2cDevice i2cbus = null;
-        private GpioPin resetPin=null;
+        private GpioPin resetPin = null;
 
-        public SSD1306Driver(I2cDevice i2cbus,GpioPin resetPin,int i2cPostCommandSleep=50)
+        public SSD1306Driver(I2cDevice i2cbus, GpioPin resetPin, int i2cPostCommandSleep=50)
         {
             if (i2cbus == null)
                 throw new ArgumentException("I2cDevice instance cannot be null.",nameof(i2cbus));
@@ -234,7 +234,7 @@ namespace sablefin.nf.OledDisplay1306
         }
 
 
-            private void ResetDisplay()
+        private void ResetDisplay()
         {
             resetPin?.Write(PinValue.Low);
             Thread.Sleep(_i2cPostCommandSleep);

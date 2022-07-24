@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sablefin.nf.WifiKit32Common
+﻿namespace sablefin.nf.WifiKit32Common
 {
 
     /// <summary>
@@ -15,7 +13,6 @@ namespace sablefin.nf.WifiKit32Common
         /// supported capabilities : CLK1, ADC2_1, Touch 1, Button
         /// </summary>
         public const int Gpio0 = 0;
-        
         
         ///// <summary>
         ///// HARDWIRED With TX

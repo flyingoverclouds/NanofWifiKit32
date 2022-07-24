@@ -1,9 +1,7 @@
-using System;
 using System.Threading;
 using System.Diagnostics;
-
 using System.Device.Gpio;
-
+using sablefin.nf.WifiKit32Common;
 
 namespace BlinkyLed
 {
@@ -15,7 +13,7 @@ namespace BlinkyLed
             int counter = 0;
             
             GpioController gpioc = new GpioController();
-            GpioPin led = gpioc.OpenPin(WifiKit32Common.OnBoardDevicePortNumber.Led,PinMode.Output); 
+            GpioPin led = gpioc.OpenPin(OnBoardDevicePortNumber.Led, PinMode.Output); 
             led.Write(PinValue.Low);
 
             while(true)
