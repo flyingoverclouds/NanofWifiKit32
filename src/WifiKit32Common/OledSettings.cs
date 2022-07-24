@@ -1,5 +1,4 @@
-﻿
-namespace sablefin.nf.WifiKit32Common
+﻿namespace sablefin.nf.WifiKit32Common
 {
     /// <summary>
     /// Constant for onboard Oled on Heltec WifiKit32 v2
