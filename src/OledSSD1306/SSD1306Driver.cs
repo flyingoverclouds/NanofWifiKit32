@@ -223,7 +223,7 @@ namespace sablefin.nf.OledDisplay1306
             //{
             //    SendI2CCommand(0x3);
             //}
-            SendI2CCommand(0x0); // VALID VALUE FOR WIFIKIT32
+            //SendI2CCommand(0x0); // VALID VALUE FOR WIFIKIT32
 
 
             byte[] img = new byte[displayBuffer.Length+1];

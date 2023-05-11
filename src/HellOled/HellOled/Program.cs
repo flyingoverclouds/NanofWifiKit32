@@ -35,8 +35,8 @@ using HeltecHelper;
 using sablefin.nf.OledDisplay1306;
 using sablefin.nf.OledFonts;
 
-using sablefin.nf.WifiKit32Common; // comment/uncomment this using when targeting Heltec WifiKit32 v2
-//using sablefin.nf.WifiLora32; // comment/uncomment this using when targeting Heltec WifiLORA32 v2
+//using sablefin.nf.WifiKit32Common; // comment/uncomment this using when targeting Heltec WifiKit32 v2
+using sablefin.nf.WifiLora32; // comment/uncomment this using when targeting Heltec WifiLORA32 v2
 
 namespace HellOled
 {
@@ -62,7 +62,27 @@ namespace HellOled
             oledScreen.FillCircle(64, 31, 12);
             oledScreen.CurrentColor = OledColor.White;
             oledScreen.DrawCircle(64, 31, 30);
+
+            //oledScreen.FillRect(0, 0, oledScreen.DisplayWidth, oledScreen.DisplayHeight);
         }
+
+        static void DemoGeometry2(SSD1306Driver oledScreen)
+        {
+            oledScreen.DrawHorizontalLine(20, 32, 88);
+            oledScreen.DrawVerticalLine(64, 10, 44);
+            oledScreen.DrawRect(30, 15, 68, 34);
+            oledScreen.CurrentColor = OledColor.Inverse;
+            oledScreen.FillRect(2, 15, 20, 34);
+            oledScreen.FillRect(106, 15, 20, 34);
+            oledScreen.DrawCircleQuads(30, 0, 30, 0b0100);
+            oledScreen.DrawCircleQuads(98, 0, 30, 0b1000);
+            oledScreen.DrawCircleQuads(30, 64, 30, 0b0010);
+            oledScreen.DrawCircleQuads(98, 64, 30, 0b0001);
+            oledScreen.FillCircle(64, 31, 12);
+            oledScreen.CurrentColor = OledColor.White;
+            oledScreen.DrawCircle(64, 31, 30);
+        }
+
 
         static void DemoScreen2(SSD1306Driver oledScreen)
         {
@@ -107,7 +127,7 @@ namespace HellOled
 
             var heltec = new HeltecOled();
             heltec.Begin();
-            heltec.Display.SetBrightness(180);
+            //heltec.Display.SetBrightness(180);
             heltec.Display.FlipScreenVertically();
             heltec.Display.CurrentColor = OledColor.White;
 
@@ -128,7 +148,7 @@ namespace HellOled
                 {
                     case 0:
                         heltec.Display.Clear();
-                        heltec.Display.TestFill(0);
+                        heltec.Display.TestFill(1);
                         break;
                     case 1:
                         heltec.Display.Clear();
