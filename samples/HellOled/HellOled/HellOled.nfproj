@@ -45,10 +45,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\OledFonts\OledFonts.nfproj" />
-    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\OledSSD1306\OledSSD1306.nfproj" />
-    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\WifiKit32Common\WifiKit32.nfproj" />
-    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\WifiLora32\WifiLora32.nfproj" />
+    <ProjectReference Include="..\..\..\src\OledFonts\OledFonts.nfproj" />
+    <ProjectReference Include="..\..\..\src\OledSSD1306\OledSSD1306.nfproj" />
+    <ProjectReference Include="..\..\..\src\WifiKit32Common\WifiKit32.nfproj" />
+    <ProjectReference Include="..\..\..\src\WifiLora32\WifiLora32.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>
