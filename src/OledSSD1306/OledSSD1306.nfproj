@@ -15,6 +15,17 @@
     <RootNamespace>sablefin.nf.OledSSD1306</RootNamespace>
     <AssemblyName>OledSSD1306</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>sablefin.nf.OledSSD1306</PackageId>
+    <Title>Nanoframework Driver for Oled display based on SSD1306</Title>
+    <Version>1.0.0</Version>
+    <Authors>Nicolas Clerc</Authors>
+    <Description>NF Driver for Oled display based on SSD1306. designed and develloped on Heltec WifiKit32/Lora32 but should work with all SSD1306 based display.</Description>
+    <Copyright>Nicolas Clerc</Copyright>
+    <PackageProjectUrl>https://github.com/flyingoverclouds/NanofWifiKit32</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/flyingoverclouds/NanofWifiKit32</RepositoryUrl>
+    <PackageTags>dotnet, nanoframework, heltec, oled, c#c csharp, esp32, </PackageTags>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
