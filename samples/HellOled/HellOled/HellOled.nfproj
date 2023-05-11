@@ -28,15 +28,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OledFonts\OledFonts.nfproj" />
-    <ProjectReference Include="..\..\OledSSD1306\OledSSD1306.nfproj" />
-    <ProjectReference Include="..\..\submodules\nanofwifikit32\src\OledFonts\OledFonts.nfproj" />
-    <ProjectReference Include="..\..\submodules\nanofwifikit32\src\OledSSD1306\OledSSD1306.nfproj" />
-    <ProjectReference Include="..\..\submodules\nanofwifikit32\src\WifiLora32\WifiLora32.nfproj" />
-    <ProjectReference Include="..\..\WifiKit32Common\WifiKit32.nfproj" />
-    <ProjectReference Include="..\..\WifiLora32\WifiLora32.nfproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>..\packages\nanoFramework.CoreLibrary.1.14.2\lib\mscorlib.dll</HintPath>
     </Reference>
@@ -52,6 +43,12 @@
     <Reference Include="System.Device.I2c">
       <HintPath>..\packages\nanoFramework.System.Device.I2c.1.1.11\lib\System.Device.I2c.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\OledFonts\OledFonts.nfproj" />
+    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\OledSSD1306\OledSSD1306.nfproj" />
+    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\WifiKit32Common\WifiKit32.nfproj" />
+    <ProjectReference Include="..\..\..\..\NanofWifiKit32-samples\submodules\nanofwifikit32\src\WifiLora32\WifiLora32.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>
